@@ -53,8 +53,8 @@ export default function Navigation({ currentPage, onNavigate }: NavigationProps)
         setBorderDims({
           top: activeButton.offsetTop - 3,
           height: 3,
-          left: activeButton.offsetLeft + activeButton.offsetWidth / 2 - 8,
-          width: 16,
+          left: 0,
+          width: activeButton.offsetLeft + activeButton.offsetWidth / 2,
         })
       }
     }
