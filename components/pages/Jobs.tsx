@@ -106,12 +106,12 @@ export default function Jobs({}: JobsProps) {
   return (
     <div className="w-full">
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center gap-4"
+        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Jobs</h1>
         <button
           onClick={() => setShowSearch(!showSearch)}
-          className="text-cream hover:text-coral transition-colors ml-auto"
+          className="text-cream hover:text-coral transition-colors"
           aria-label="Toggle search"
         >
           <MagnifyingGlassIcon width={20} height={20} />
@@ -187,30 +187,20 @@ export default function Jobs({}: JobsProps) {
             <motion.div
               key={job.id}
               variants={itemVariants}
-              className="bg-surface py-4 px-0 border-t border-border hover:border-t-coral/50 transition-colors cursor-pointer"
+              className="bg-surface pl-0 pr-6 py-6 transition-colors cursor-pointer"
               onClick={() => console.log('Job clicked:', job.id)}
             >
-              <div className="px-4">
-                <h3 className="text-xl font-light mb-2">{job.title}</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                  <div>
-                    <p className="text-cream/50 font-mono text-xs mb-1">TYPE</p>
-                    <p className="font-mono text-mint">{job.type}</p>
-                  </div>
-                  <div>
-                    <p className="text-cream/50 font-mono text-xs mb-1">BUDGET</p>
-                    <p className="font-mono text-xl text-mint font-semibold">{job.budget}</p>
-                  </div>
-                  <div>
-                    <p className="text-cream/50 font-mono text-xs mb-1">SALARY RANGE</p>
-                    <p className="font-mono text-mint">{job.salary}</p>
-                  </div>
-                  <div>
-                    <p className="text-cream/50 font-mono text-xs mb-1">LOCATION</p>
-                    <p className="font-mono text-mint">{job.location}</p>
-                  </div>
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-light mb-1">{job.title}</h3>
+                  <p className="text-cream/60 font-mono text-sm">{job.type}</p>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <p className="font-mono text-mint text-sm font-semibold">{job.budget}</p>
+                  <p className="text-cream/60 font-mono text-xs">{job.salary}</p>
                 </div>
               </div>
+              <p className="text-cream/50 font-mono text-xs">{job.location}</p>
             </motion.div>
           ))}
         </motion.div>
