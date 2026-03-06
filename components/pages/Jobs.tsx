@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
 
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -52,24 +51,23 @@ export default function Jobs({}: JobsProps) {
         <motion.div variants={itemVariants} initial="hidden" animate="visible"
           className="bg-surface pl-0 pr-0 py-0 mb-4"
         >
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-            <MagnifyingGlassIcon width={20} height={20} className="text-cream/60" />
+          <div className="px-4 py-3">
             <input
               type="text"
               placeholder="Search jobs..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 bg-dark text-cream placeholder-cream/40 outline-none font-mono text-sm"
+              className="w-full bg-transparent text-cream placeholder-cream/40 outline-none font-mono text-sm border-b border-border pb-2"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 pt-4">
             <div>
               <label className="block text-cream/60 font-mono text-xs mb-2">TYPE</label>
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-dark border border-border text-cream font-mono text-sm"
+                className="w-full px-0 py-2 bg-transparent border-b border-border text-cream font-mono text-sm outline-none"
               >
                 {types.map(t => (
                   <option key={t} value={t}>{t}</option>
@@ -82,7 +80,7 @@ export default function Jobs({}: JobsProps) {
               <select
                 value={salaryFilter}
                 onChange={(e) => setSalaryFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-dark border border-border text-cream font-mono text-sm"
+                className="w-full px-0 py-2 bg-transparent border-b border-border text-cream font-mono text-sm outline-none"
               >
                 {salaries.map(s => (
                   <option key={s} value={s}>{s}</option>
@@ -95,7 +93,7 @@ export default function Jobs({}: JobsProps) {
               <select
                 value={locationFilter}
                 onChange={(e) => setLocationFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-dark border border-border text-cream font-mono text-sm"
+                className="w-full px-0 py-2 bg-transparent border-b border-border text-cream font-mono text-sm outline-none"
               >
                 {locations.map(l => (
                   <option key={l} value={l}>{l}</option>
