@@ -3,17 +3,6 @@
 import { motion } from 'framer-motion'
 import { ArrowUpIcon, ArrowDownIcon, PlusIcon } from '@radix-ui/react-icons'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.3,
-    },
-  },
-}
-
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
   visible: {
