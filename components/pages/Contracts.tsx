@@ -1,78 +1,111 @@
 'use client'
 
-import { useEffect } from 'react'
-import gsap from 'gsap'
+import { motion } from 'framer-motion'
 import { CheckIcon, ClockIcon } from '@radix-ui/react-icons'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.3,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+}
 
 interface ContractsProps {
   onNavigate: (page: any) => void
+  contracts?: any[]
+  onDeleteContract?: (id: number) => void
+  onTrackTime?: (contractId: number) => void
 }
 
-const mockContracts = [
-  { id: 1, client: 'Acme Corp', rate: '$95/hr', status: 'active', startDate: '2024-01-15' },
-  { id: 2, client: 'Zenith Design', rate: '$120/hr', status: 'active', startDate: '2024-02-01' },
-  { id: 3, client: 'Nexus Tech', rate: '$110/hr', status: 'pending', startDate: '2024-03-01' },
-]
-
-export default function Contracts({ onNavigate }: ContractsProps) {
-  useEffect(() => {
-    const elements = document.querySelectorAll('.contract-item')
-    gsap.from(elements, {
-      opacity: 0,
-      y: 24,
-      duration: 0.6,
-      stagger: 0.08,
-      ease: 'power3.out',
-    })
-  }, [])
+export default function Contracts({ onNavigate, contracts = [], onDeleteContract, onTrackTime }: ContractsProps) {
 
   return (
-    <div className="px-4 md:px-8 py-8 max-w-4xl mx-auto w-full">
-      <div className="flex items-center justify-between mb-8">
+    <div className="w-full">
+      <motion.div variants={itemVariants} initial="hidden" animate="visible"
+        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
+      >
         <h1 className="text-4xl font-light">Contracts</h1>
-        <button className="bg-coral text-dark px-6 py-3 rounded-lg font-mono text-sm flex items-center gap-2 hover:bg-coral/90">
-          + New Contract
-        </button>
-      </div>
+        {contracts.length > 0 && (
+          <button onClick={() => onNavigate('contracts')} className="bg-coral text-dark px-6 py-3 font-mono text-sm flex items-center gap-2 hover:bg-coral/90">
+            + New Contract
+          </button>
+        )}
+      </motion.div>
 
-      <div className="space-y-4">
-        {mockContracts.map((contract) => (
-          <div
-            key={contract.id}
-            className="contract-item bg-surface rounded-lg p-6 border border-border hover:border-coral/50 transition-colors cursor-pointer"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-light mb-1">{contract.client}</h3>
-                <p className="text-cream/60 font-mono text-sm">{contract.rate}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {contract.status === 'active' ? (
-                  <div className="flex items-center gap-1 text-mint">
-                    <CheckIcon width={16} height={16} />
-                    <span className="font-mono text-xs">Active</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1 text-coral">
-                    <ClockIcon width={16} height={16} />
-                    <span className="font-mono text-xs">Pending</span>
-                  </div>
-                )}
-              </div>
-            </div>
-            <p className="text-cream/50 font-mono text-xs">Started {contract.startDate}</p>
-          </div>
-        ))}
-      </div>
+      <div className="px-4 md:px-8">
 
-      <div className="mt-12 bg-surface rounded-lg p-8 border border-border text-center">
-        <p className="text-cream/60 mb-6">Want to create a new contract?</p>
-        <button
-          onClick={() => onNavigate('contracts')}
-          className="bg-coral text-dark px-8 py-3 rounded-lg font-mono font-medium hover:bg-coral/90"
-        >
-          Start New Contract
-        </button>
+      {contracts.length === 0 ? (
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">
+          <motion.div variants={itemVariants}>
+            <button
+              onClick={() => onNavigate('contracts')}
+              className="bg-coral text-dark px-8 py-3 font-mono font-medium hover:bg-coral/90"
+            >
+              Create one
+            </button>
+          </motion.div>
+        </motion.div>
+      ) : (
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+          {contracts.map((contract) => (
+            <motion.div
+              key={contract.id}
+              variants={itemVariants}
+              className="bg-surface pl-0 pr-6 py-6 transition-colors cursor-pointer"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-light mb-1">{contract.client}</h3>
+                  <p className="text-cream/60 font-mono text-sm">{contract.rate}</p>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <div className="flex items-center gap-2">
+                    {contract.status === 'active' ? (
+                      <div className="flex items-center gap-1 text-mint">
+                        <CheckIcon width={16} height={16} />
+                        <span className="font-mono text-xs">Active</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-coral">
+                        <ClockIcon width={16} height={16} />
+                        <span className="font-mono text-xs">Pending</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => onTrackTime?.(contract.id)}
+                      className="text-mint hover:text-mint/80 font-mono text-xs transition-colors"
+                    >
+                      Track
+                    </button>
+                    <button
+                      onClick={() => onDeleteContract?.(contract.id)}
+                      className="text-coral hover:text-coral/80 font-mono text-xs transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p className="text-cream/50 font-mono text-xs">Started {contract.startDate}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
       </div>
     </div>
   )

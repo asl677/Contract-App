@@ -1,105 +1,75 @@
 'use client'
 
-import { useEffect } from 'react'
-import gsap from 'gsap'
+import { motion } from 'framer-motion'
 
 interface DashboardProps {
   onNavigate: (page: any) => void
+  totalTimeThisWeek?: string
+  contracts?: any[]
 }
 
-export default function Dashboard({ onNavigate }: DashboardProps) {
-  useEffect(() => {
-    const elements = document.querySelectorAll('.dashboard-item')
-    gsap.from(elements, {
-      opacity: 0,
-      y: 24,
-      duration: 0.6,
-      stagger: 0.08,
-      ease: 'power3.out',
-    })
-  }, [])
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.3,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+}
+
+export default function Dashboard({ onNavigate, totalTimeThisWeek = '0h', contracts = [] }: DashboardProps) {
+  const items = [
+    { id: 'contracts', title: 'Active Contracts', value: String(contracts.length), action: 'View Contracts →' },
+    { id: 'time', title: 'This Week', value: totalTimeThisWeek, action: 'Track Time' },
+  ]
+
+  const today = new Date()
+  const dateString = today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
 
   return (
-    <div className="px-4 md:px-8 py-8 max-w-7xl mx-auto w-full">
-      <div className="dashboard-item mb-12">
-        <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-2">Freelancer Pro</h1>
-        <p className="text-cream/60">Manage contracts, time, and payments professionally</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="dashboard-item bg-surface rounded-lg p-6 border border-border">
-          <h2 className="text-2xl font-light mb-4">Active Contracts</h2>
-          <p className="text-4xl font-mono text-mint mb-4">3</p>
-          <button
-            onClick={() => onNavigate('contracts')}
-            className="flex items-center gap-2 text-coral hover:text-coral/80 font-mono text-sm"
-          >
-            View Contracts →
-          </button>
-        </div>
-
-        <div className="dashboard-item bg-surface rounded-lg p-6 border border-border">
-          <h2 className="text-2xl font-light mb-4">This Week</h2>
-          <p className="text-4xl font-mono text-mint mb-4">24h</p>
-          <button
-            onClick={() => onNavigate('time')}
-            className="flex items-center gap-2 text-coral hover:text-coral/80 font-mono text-sm"
-          >
-            Track Time
-          </button>
-        </div>
-
-        <div className="dashboard-item bg-surface rounded-lg p-6 border border-border">
-          <h2 className="text-2xl font-light mb-4">Pending Invoices</h2>
-          <p className="text-4xl font-mono text-coral mb-4">2</p>
-          <button
-            onClick={() => onNavigate('invoices')}
-            className="flex items-center gap-2 text-mint hover:text-mint/80 font-mono text-sm"
-          >
-            Send Invoice
-          </button>
-        </div>
-
-        <div className="dashboard-item bg-surface rounded-lg p-6 border border-border">
-          <h2 className="text-2xl font-light mb-4">Account Balance</h2>
-          <p className="text-4xl font-mono text-mint mb-4">$3,240</p>
-          <button
-            onClick={() => onNavigate('payments')}
-            className="flex items-center gap-2 text-coral hover:text-coral/80 font-mono text-sm"
-          >
-            Withdraw
-          </button>
-        </div>
-      </div>
-
-      <div className="dashboard-item bg-surface rounded-lg p-6 border border-border">
-        <h3 className="text-xl font-light mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button
-            onClick={() => onNavigate('contracts')}
-            className="bg-dark rounded-lg p-4 text-center hover:bg-border transition-colors"
-          >
-            <p className="text-sm font-mono text-mint">New Contract</p>
-          </button>
-          <button
-            onClick={() => onNavigate('time')}
-            className="bg-dark rounded-lg p-4 text-center hover:bg-border transition-colors"
-          >
-            <p className="text-sm font-mono text-mint">Start Timer</p>
-          </button>
-          <button
-            onClick={() => onNavigate('invoices')}
-            className="bg-dark rounded-lg p-4 text-center hover:bg-border transition-colors"
-          >
-            <p className="text-sm font-mono text-coral">Create Invoice</p>
-          </button>
-          <button
-            onClick={() => onNavigate('payments')}
-            className="bg-dark rounded-lg p-4 text-center hover:bg-border transition-colors"
-          >
-            <p className="text-sm font-mono text-mint">Withdraw Funds</p>
-          </button>
-        </div>
+    <div className="w-full">
+      <motion.h1 variants={itemVariants} initial="hidden" animate="visible"
+        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 text-4xl font-light"
+      >
+        Work
+      </motion.h1>
+      <motion.p variants={itemVariants} initial="hidden" animate="visible"
+        className="px-4 md:px-8 text-cream/60 font-mono text-sm mb-8 pt-0"
+      >
+        {dateString}
+      </motion.p>
+      <div className="py-8">
+      <motion.div className="px-4 md:px-8 grid grid-cols-1 gap-6" variants={containerVariants} initial="hidden" animate="visible">
+        {items.map((item, idx) => (
+          <div key={item.id}>
+            {idx === 1 && <div className="border-t border-cream/10 mb-6"></div>}
+            <motion.div
+              variants={itemVariants}
+              className="bg-surface pt-6 pr-6 pb-6"
+            >
+              <h2 className="text-2xl font-light mb-4">{item.title}</h2>
+              <p className={`text-4xl font-mono ${item.valueColor || 'text-mint'} mb-4`}>{item.value}</p>
+              <button
+                onClick={() => onNavigate(item.id)}
+                className="flex items-center gap-2 text-coral hover:text-coral/80 font-mono text-sm"
+              >
+                {item.action}
+              </button>
+            </motion.div>
+          </div>
+        ))}
+      </motion.div>
       </div>
     </div>
   )

@@ -1,46 +1,51 @@
 'use client'
 
-import { useEffect } from 'react'
-import gsap from 'gsap'
+import { motion } from 'framer-motion'
 import { UploadIcon, CheckIcon } from '@radix-ui/react-icons'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.3,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+}
 
 interface InvoicesProps {
   onNavigate: (page: any) => void
 }
 
-const mockInvoices = [
-  { id: 'INV-001', client: 'Acme Corp', amount: '$2,150', status: 'paid', date: '2024-03-01' },
-  { id: 'INV-002', client: 'Zenith Design', amount: '$3,420', status: 'pending', date: '2024-03-05' },
-  { id: 'INV-003', client: 'Nexus Tech', amount: '$1,980', status: 'draft', date: '2024-03-10' },
-]
-
 export default function Invoices(_: InvoicesProps) {
-  useEffect(() => {
-    const elements = document.querySelectorAll('.invoice-item')
-    gsap.from(elements, {
-      opacity: 0,
-      y: 24,
-      duration: 0.6,
-      stagger: 0.08,
-      ease: 'power3.out',
-    })
-  }, [])
+  const mockInvoices: any[] = []
 
   return (
-    <div className="px-4 md:px-8 py-8 max-w-4xl mx-auto w-full">
-      <div className="flex items-center justify-between mb-8">
+    <div className="w-full">
+      <motion.div variants={itemVariants} initial="hidden" animate="visible"
+        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8"
+      >
         <h1 className="text-4xl font-light">Invoices</h1>
-        <button className="bg-coral text-dark px-6 py-3 rounded-lg font-mono text-sm flex items-center gap-2 hover:bg-coral/90">
-          <UploadIcon width={16} height={16} />
-          Generate
-        </button>
-      </div>
+      </motion.div>
 
-      <div className="space-y-4">
+      <div className="px-4 md:px-8 py-8">
+
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
         {mockInvoices.map((invoice) => (
-          <div
+          <motion.div
             key={invoice.id}
-            className="invoice-item bg-surface rounded-lg p-6 border border-border hover:border-coral/50 transition-colors"
+            variants={itemVariants}
+            className="bg-surface py-4 px-0 border-t border-border hover:border-t-coral/50 transition-colors"
           >
             <div className="flex items-start justify-between">
               <div>
@@ -51,7 +56,7 @@ export default function Invoices(_: InvoicesProps) {
               <div className="text-right">
                 <p className="text-2xl font-mono text-mint mb-2">{invoice.amount}</p>
                 <span
-                  className={`inline-flex items-center gap-1 font-mono text-xs px-3 py-1 rounded ${
+                  className={`inline-flex items-center gap-1 font-mono text-xs px-3 py-1 ${
                     invoice.status === 'paid'
                       ? 'bg-mint/20 text-mint'
                       : invoice.status === 'pending'
@@ -64,8 +69,9 @@ export default function Invoices(_: InvoicesProps) {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
+      </motion.div>
       </div>
     </div>
   )
