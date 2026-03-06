@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
   <rect width="1200" height="630" fill="#0f0d0a"/>
-  <circle cx="600" cy="315" r="180" fill="none" stroke="#ede0c8" stroke-width="20" stroke-linecap="round"/>
-  <path d="M 600 90 Q 750 90 750 240" fill="none" stroke="#ede0c8" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
-  <line x1="600" y1="150" x2="780" y2="330" stroke="#ede0c8" stroke-width="20" stroke-linecap="round"/>
+  <g transform="translate(600, 315) scale(20)" fill="none" stroke="#ede0c8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 0 -9 A 9 9 0 0 1 9 0"/>
+    <polyline points="8 -3 9 0 6 1"/>
+    <path d="M 0 9 A 9 9 0 0 1 -9 0"/>
+  </g>
 </svg>

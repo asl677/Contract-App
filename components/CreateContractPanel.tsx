@@ -38,7 +38,8 @@ export default function CreateContractPanel({
       animate={{ width: isOpen ? 384 : 0 }}
       exit={{ width: 0 }}
       transition={{ duration: 0.3,  }}
-      className="fixed md:relative right-0 top-0 w-96 bg-white border-l border-black flex flex-col h-screen overflow-hidden z-50 md:z-auto"
+      className="fixed md:relative right-0 top-0 bg-white border-l border-black flex flex-col h-screen overflow-hidden z-40 md:z-auto"
+      style={{ width: isOpen ? 384 : 0 }}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-6 bg-white flex-shrink-0">
@@ -52,7 +53,7 @@ export default function CreateContractPanel({
       </div>
 
       {/* Form */}
-      <div className="flex-1 p-6 space-y-4 overflow-y-auto">
+      <div className="flex-1 p-6 space-y-4 overflow-y-auto w-96">
         <div className="bg-dark/50 p-4 rounded text-sm text-dark/70 mb-4">
           Payments are handled outside of this app. This contract binding is for legal record-keeping only.
         </div>
