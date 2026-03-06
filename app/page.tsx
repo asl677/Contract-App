@@ -190,6 +190,15 @@ function HomeContent() {
           animate={{ scaleX: 1, opacity: 0, originX: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         />
+        <motion.div
+          key={`loader-text-${currentPage}`}
+          className="fixed top-2 left-4 z-50 pointer-events-none"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <p className="text-black text-xs font-mono">Grabbing jobs</p>
+        </motion.div>
         <AnimatePresence>
           {isTimerRunning && (
             <motion.div

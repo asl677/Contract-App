@@ -81,7 +81,7 @@ export default function Navigation({ currentPage, onNavigate }: NavigationProps)
         />
 
         {navItems.map(({ id, label, Icon }, idx) => (
-          <button
+          <motion.button
             key={id}
             ref={(el) => {
               buttonRefs.current[idx] = el
@@ -94,9 +94,12 @@ export default function Navigation({ currentPage, onNavigate }: NavigationProps)
             }`}
             title={label}
             aria-label={label}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: idx * 0.08 }}
           >
             <Icon width={24} height={24} />
-          </button>
+          </motion.button>
         ))}
       </nav>
     </>
