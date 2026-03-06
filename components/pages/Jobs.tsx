@@ -4,6 +4,17 @@ import { motion } from 'framer-motion'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.3,
+    },
+  },
+}
+
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
   visible: {
@@ -184,7 +195,7 @@ export default function Jobs({ onNavigate }: JobsProps) {
           </motion.div>
         )}
 
-        <motion.div variants={itemVariants} initial="hidden" animate="visible" className="space-y-0">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-0">
           {filtered.map((job) => (
             <motion.div
               key={job.id}
