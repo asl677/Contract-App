@@ -167,14 +167,14 @@ export default function Home() {
           className="fixed top-0 left-0 right-0 h-1 bg-black z-50"
           initial={{ scaleX: 0, originX: 0 }}
           animate={{ scaleX: 1, originX: 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          transition={{ duration: 0.3,  }}
         />
         <motion.div
           key={currentPage}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut", delay: 0.3 }}
+          transition={{ duration: 0.8, , delay: 0.3 }}
         >
           {currentPage === 'dashboard' && <Dashboard onNavigate={setCurrentPage} totalTimeThisWeek={totalTime} contracts={contracts} />}
           {currentPage === 'contracts' && <Contracts onNavigate={(p) => {
