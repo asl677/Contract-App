@@ -1,7 +1,7 @@
 {
-  "name": "freelancer-app",
+  "name": "free-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Free - A simple freelance job board",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",

@@ -4,6 +4,25 @@ const formatSalary = (salary: number) => {
   return Math.round(salary / 1000) + 'K'
 }
 
+const getJobType = (title: string): string => {
+  const lowerTitle = title.toLowerCase()
+
+  if (lowerTitle.includes('design') || lowerTitle.includes('ui') || lowerTitle.includes('ux')) return 'Design'
+  if (lowerTitle.includes('frontend') || lowerTitle.includes('react') || lowerTitle.includes('vue')) return 'Frontend'
+  if (lowerTitle.includes('backend') || lowerTitle.includes('node') || lowerTitle.includes('django')) return 'Backend'
+  if (lowerTitle.includes('full stack')) return 'Full Stack'
+  if (lowerTitle.includes('devops') || lowerTitle.includes('infrastructure')) return 'DevOps'
+  if (lowerTitle.includes('data scientist') || lowerTitle.includes('analytics')) return 'Data Science'
+  if (lowerTitle.includes('mobile') || lowerTitle.includes('ios') || lowerTitle.includes('android')) return 'Mobile'
+  if (lowerTitle.includes('ml') || lowerTitle.includes('machine learning') || lowerTitle.includes('ai')) return 'AI/ML'
+  if (lowerTitle.includes('security')) return 'Security'
+  if (lowerTitle.includes('cloud') || lowerTitle.includes('architect')) return 'Cloud'
+  if (lowerTitle.includes('product')) return 'Product'
+  if (lowerTitle.includes('platform')) return 'Backend'
+
+  return 'Full Stack'
+}
+
 // Real job listings with accurate data
 const realJobs = [
   { title: 'Senior Full Stack Developer', company: 'Google', location: 'San Francisco', min: 180000, max: 250000 },
@@ -36,7 +55,7 @@ export async function GET() {
     id: idx + 1,
     title: job.title,
     company: job.company,
-    type: job.title.includes('Design') || job.title.includes('Designer') ? 'Design' : 'Product',
+    type: getJobType(job.title),
     salary: `${formatSalary(job.min)}-${formatSalary(job.max)}`,
     location: job.location,
     url: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(job.title)}&location=${encodeURIComponent(job.location)}`,
