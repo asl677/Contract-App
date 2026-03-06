@@ -105,29 +105,27 @@ export default function Jobs({}: JobsProps) {
 
   return (
     <div className="w-full">
-      <div className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between">
-        <motion.h1 variants={itemVariants} initial="hidden" animate="visible"
-          className="text-4xl font-light"
-        >
-          Jobs
-        </motion.h1>
+      <motion.div variants={itemVariants} initial="hidden" animate="visible"
+        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center gap-4"
+      >
+        <h1 className="text-4xl font-light">Jobs</h1>
         <button
           onClick={() => setShowSearch(!showSearch)}
-          className="text-cream hover:text-coral transition-colors"
+          className="text-cream hover:text-coral transition-colors ml-auto"
           aria-label="Toggle search"
         >
-          <MagnifyingGlassIcon width={24} height={24} />
+          <MagnifyingGlassIcon width={20} height={20} />
         </button>
-      </div>
+      </motion.div>
 
-      <div className="py-4">
+      <div className="px-4 md:px-8 py-4">
         {showSearch && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="bg-transparent py-6 mb-4 space-y-6 px-4 md:px-8"
+            className="bg-transparent mb-4 space-y-6"
           >
             <input
               type="text"
