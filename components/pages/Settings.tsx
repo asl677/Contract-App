@@ -13,11 +13,10 @@ const itemVariants = {
 }
 
 interface SettingsProps {
-  onNavigate: (page: any) => void
   onClearEntries?: () => void
 }
 
-export default function Settings({ onNavigate, onClearEntries }: SettingsProps) {
+export default function Settings({ onClearEntries }: SettingsProps) {
   const [showConfirm, setShowConfirm] = useState(false)
 
   const handleClear = () => {
