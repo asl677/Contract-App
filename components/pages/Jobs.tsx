@@ -119,7 +119,7 @@ export default function Jobs({ onNavigate }: JobsProps) {
   return (
     <div className="w-full">
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
+        className="fixed top-0 left-0 right-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Jobs</h1>
         <button
@@ -131,7 +131,7 @@ export default function Jobs({ onNavigate }: JobsProps) {
         </button>
       </motion.div>
 
-      <div className="px-4 md:px-8 py-4">
+      <div className="px-4 md:px-8 py-4 pt-24">
         {showSearch && (
           <motion.div
             initial={{ opacity: 0 }}

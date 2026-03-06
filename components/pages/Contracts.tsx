@@ -35,7 +35,7 @@ export default function Contracts({ onNavigate, contracts = [], onDeleteContract
   return (
     <div className="w-full">
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
+        className="fixed top-0 left-0 right-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Contracts</h1>
         {contracts.length > 0 && (
@@ -45,7 +45,7 @@ export default function Contracts({ onNavigate, contracts = [], onDeleteContract
         )}
       </motion.div>
 
-      <div className="px-4 md:px-8">
+      <div className="px-4 md:px-8 pt-24">
 
       {contracts.length === 0 ? (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">

@@ -28,12 +28,12 @@ export default function Settings({ onClearEntries }: SettingsProps) {
   return (
     <div className="w-full">
       <motion.h1 variants={itemVariants} initial="hidden" animate="visible"
-        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 text-4xl font-light"
+        className="fixed top-0 left-0 right-0 bg-dark z-40 px-4 md:px-8 py-8 text-4xl font-light"
       >
         Settings
       </motion.h1>
 
-      <div className="px-4 md:px-8 py-4">
+      <div className="px-4 md:px-8 py-4 pt-24">
         <motion.div variants={itemVariants} initial="hidden" animate="visible"
           className="bg-surface pl-0 pr-0 py-0 mb-2"
         >

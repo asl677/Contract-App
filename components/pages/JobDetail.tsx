@@ -79,7 +79,7 @@ export default function JobDetail({ jobId, onNavigate }: JobDetailProps) {
   return (
     <div className="w-full">
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="sticky top-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center gap-4"
+        className="fixed top-0 left-0 right-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center gap-4"
       >
         <button
           onClick={() => onNavigate?.('jobs')}
@@ -91,7 +91,7 @@ export default function JobDetail({ jobId, onNavigate }: JobDetailProps) {
         <h1 className="text-4xl font-light">{job.title}</h1>
       </motion.div>
 
-      <div className="px-4 md:px-8 py-8">
+      <div className="px-4 md:px-8 py-8 pt-24">
         <motion.div variants={itemVariants} initial="hidden" animate="visible"
           className="max-w-2xl space-y-8"
         >
