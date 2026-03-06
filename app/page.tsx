@@ -183,22 +183,6 @@ function HomeContent() {
 
       <div className="flex flex-1 relative overflow-hidden">
         <main className="flex-1 overflow-y-auto pb-20 md:pb-0 relative md:pl-20">
-        <motion.div
-          key={`loader-${currentPage}`}
-          className="fixed top-0 left-0 right-0 h-1 bg-black z-50"
-          initial={{ scaleX: 0, opacity: 1, originX: 0 }}
-          animate={{ scaleX: 1, opacity: 0, originX: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        />
-        <motion.div
-          key={`loader-text-${currentPage}`}
-          className="fixed top-2 left-4 z-50 pointer-events-none"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <p className="text-black text-xs font-mono">Grabbing jobs</p>
-        </motion.div>
         <AnimatePresence>
           {isTimerRunning && (
             <motion.div

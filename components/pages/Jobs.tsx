@@ -31,6 +31,7 @@ interface Job {
   type: string
   salary: string
   location: string
+  duration: string
   url: string
   board: string
 }
@@ -197,7 +198,7 @@ export default function Jobs() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-light mb-1">{job.title}</h3>
-                    <p className="text-cream/60 font-mono text-sm">{job.type} • {job.company}</p>
+                    <p className="text-cream/60 font-mono text-sm">{job.type} • {job.duration}</p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <p className="text-3xl md:text-6xl text-mint font-sans font-medium">{job.salary}</p>
