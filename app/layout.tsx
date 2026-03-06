@@ -2,13 +2,13 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Contract App - A Simple way to track work',
-  description: 'Track your contracts, log work time, and manage your freelance business with ease',
-  applicationName: 'Contract App',
+  title: 'Free - A simple freelance job board',
+  description: 'Discover freelance jobs, track your contracts, and manage your time all in one place',
+  applicationName: 'Free',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Contract App',
+    title: 'Free',
   },
   formatDetection: {
     telephone: false,
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://contract-app.vercel.app',
-    siteName: 'Contract App',
-    title: 'Contract App - A Simple way to track work',
-    description: 'Track your contracts, log work time, and manage your freelance business with ease',
+    url: 'https://freelancer-app-gamma.vercel.app',
+    siteName: 'Free',
+    title: 'Free - A simple freelance job board',
+    description: 'Discover freelance jobs, track your contracts, and manage your time all in one place',
     images: [
       {
         url: '/og-image.svg',
@@ -36,8 +36,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contract App',
-    description: 'Track your contracts, log work time, and manage your freelance business',
+    title: 'Free - A simple freelance job board',
+    description: 'Discover freelance jobs, track your contracts, and manage your time',
     images: ['/og-image.svg'],
   },
 }
@@ -54,7 +54,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Contract App" />
+        <meta name="apple-mobile-web-app-title" content="Free" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
