@@ -87,10 +87,10 @@ export default function Navigation({ currentPage, onNavigate }: NavigationProps)
               buttonRefs.current[idx] = el
             }}
             onClick={() => onNavigate(id as any)}
-            className={`flex flex-col items-center gap-1 p-3 transition-colors relative z-10 ${
+            className={`flex flex-col items-center gap-1 p-3 transition-colors relative z-10 rounded ${
               currentPage === id
                 ? 'bg-coral text-dark'
-                : 'text-cream hover:bg-border'
+                : 'text-cream hover:bg-white/10'
             }`}
             title={label}
             aria-label={label}
