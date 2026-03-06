@@ -15,22 +15,22 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.svg',
-    apple: '/apple-touch-icon.svg',
+    apple: '/apple-touch-icon.png',
   },
   manifest: '/manifest.json',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://freelancer-app-gamma.vercel.app',
+    url: 'https://free-app-gamma.vercel.app',
     siteName: 'Free',
     title: 'Free - A simple freelance job board',
     description: 'Discover freelance jobs, track your contracts, and manage your time all in one place',
     images: [
       {
-        url: '/og-image.svg',
+        url: 'https://free-app-gamma.vercel.app/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Contract App',
+        alt: 'Free App',
       },
     ],
   },
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Free - A simple freelance job board',
     description: 'Discover freelance jobs, track your contracts, and manage your time',
-    images: ['/og-image.svg'],
+    images: ['https://free-app-gamma.vercel.app/og-image.png'],
   },
 }
 
@@ -57,7 +57,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Free" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#0f0d0a" />
       </head>
       <body className="bg-dark text-cream font-serif">
