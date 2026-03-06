@@ -168,9 +168,9 @@ export default function Home() {
         <motion.div
           key={`loader-${currentPage}`}
           className="fixed top-0 left-0 right-0 h-1 bg-black z-50"
-          initial={{ scaleX: 0, originX: 0 }}
-          animate={{ scaleX: 1, originX: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={{ scaleX: 0, opacity: 1, originX: 0 }}
+          animate={{ scaleX: 1, opacity: 0, originX: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         />
         {isTimerRunning && (
           <motion.div
