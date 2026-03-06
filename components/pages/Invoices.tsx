@@ -20,8 +20,8 @@ export default function Invoices(_: InvoicesProps) {
     gsap.from(elements, {
       opacity: 0,
       y: 24,
-      duration: 0.5,
-      stagger: 0.1,
+      duration: 0.6,
+      stagger: 0.08,
       ease: 'power3.out',
     })
   }, [])
