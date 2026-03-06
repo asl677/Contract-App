@@ -40,12 +40,12 @@ export default function Dashboard({ onNavigate, totalTimeThisWeek = '0h', contra
   return (
     <div className="w-full">
       <motion.h1 variants={itemVariants} initial="hidden" animate="visible"
-        className="fixed top-0 left-0 right-0 bg-dark z-40 px-4 md:px-8 py-8 text-4xl font-light"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8 text-4xl font-light"
       >
         Work
       </motion.h1>
       <motion.p variants={itemVariants} initial="hidden" animate="visible"
-        className="fixed top-20 left-0 right-0 bg-dark px-4 md:px-8 text-cream/60 font-mono text-sm mb-8 pt-0 z-39"
+        className="fixed top-20 left-0 right-0 md:left-20 bg-dark px-4 md:px-8 text-cream/60 font-mono text-sm mb-8 pt-0 z-39"
       >
         {dateString}
       </motion.p>

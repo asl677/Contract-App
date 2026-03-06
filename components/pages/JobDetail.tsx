@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { ArrowLeftIcon, CheckIcon } from '@radix-ui/react-icons'
 
 const itemVariants = {
@@ -79,7 +79,7 @@ export default function JobDetail({ jobId, onNavigate }: JobDetailProps) {
   return (
     <div className="w-full">
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="fixed top-0 left-0 right-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center gap-4"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8 flex items-center gap-4"
       >
         <button
           onClick={() => onNavigate?.('jobs')}

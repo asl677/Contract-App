@@ -1,8 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
+import { useState, useEffect, useCallback } from 'react'
+import { MagnifyingGlassIcon, ReloadIcon } from '@radix-ui/react-icons'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -24,111 +24,105 @@ const itemVariants = {
   },
 }
 
-const generateMockJobs = (count: number) => {
-  const titles = [
-    'Product Design', 'UI/UX Design', 'Full Stack Developer', 'Brand Identity',
-    'Web Development', 'Mobile App Design', 'Graphic Design', 'Backend Engineer',
-    'Frontend Developer', 'Logo Design', 'Branding Package', 'React Developer',
-    'Node.js Developer', 'Python Developer', 'UI Designer', 'UX Researcher',
-    'Wireframing', 'Prototype Design', 'Website Redesign', 'Landing Page',
-    'eCommerce Design', 'App Development', 'API Integration', 'Database Design',
-    'Cloud Architecture', 'DevOps Engineer', 'QA Tester', 'Tech Lead',
-    'Data Analyst', 'Machine Learning', 'AI Development', 'Vue.js Developer',
-    'Angular Developer', 'TypeScript Expert', 'CSS Specialist', 'Performance Optimization',
-    'SEO Specialist', 'Content Strategy', 'Copywriting', 'Illustration',
-    'Animation Design', 'Video Editing', 'Podcast Editing', 'Sound Design',
-  ]
-
-  const types = ['Product', 'Design']
-  const locations = ['Remote', 'USA', 'EU', 'ASIA']
-
-  const jobs = []
-  for (let i = 1; i <= count; i++) {
-    const type = types[Math.floor(Math.random() * types.length)]
-    const minSalary = Math.floor(Math.random() * 6000) + 1500
-    const maxSalary = minSalary + Math.floor(Math.random() * 4000) + 1000
-    const budget = Math.floor((minSalary + maxSalary) / 2) + Math.floor(Math.random() * 2000)
-
-    jobs.push({
-      id: i,
-      title: titles[Math.floor(Math.random() * titles.length)],
-      type,
-      salary: `$${minSalary}-${maxSalary}`,
-      location: locations[Math.floor(Math.random() * locations.length)],
-      budget: `$${budget}`,
-    })
-  }
-  return jobs
+interface Job {
+  id: number
+  title: string
+  company: string
+  type: string
+  salary: string
+  location: string
+  url: string
+  board: string
 }
 
-const allJobs = generateMockJobs(500)
-
-interface JobsProps {
-  onNavigate?: (page: string, jobId?: number) => void
-}
-
-export default function Jobs({ onNavigate }: JobsProps) {
+export default function Jobs() {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('All')
-  const [salaryFilter, setSalaryFilter] = useState('All')
   const [locationFilter, setLocationFilter] = useState('All')
-  const [displayedJobs, setDisplayedJobs] = useState(allJobs.slice(0, 50))
+  const [displayedJobs, setDisplayedJobs] = useState<Job[]>([])
   const [showSearch, setShowSearch] = useState(false)
-  const loaderRef = useRef<HTMLDivElement>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   const types = ['All', 'Product', 'Design']
-  const salaries = ['All', '$0-2000', '$2000-4000', '$4000-6000', '$6000+']
-  const locations = ['All', 'Remote', 'USA', 'EU', 'ASIA']
+  const locations = ['All', 'Remote', 'San Francisco, CA', 'New York, NY', 'Austin, TX', 'Seattle, WA', 'Los Angeles, CA', 'Chicago, IL', 'Boston, MA']
+
+  const fetchJobs = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/jobs')
+      const jobs = await response.json()
+      setDisplayedJobs(jobs.slice(0, 50))
+      setLastUpdated(new Date())
+    } catch (error) {
+      console.error('Failed to fetch jobs:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const getRelativeTime = (date: Date) => {
+    const now = new Date()
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+    if (seconds < 60) return 'just now'
+    const minutes = Math.floor(seconds / 60)
+    if (minutes < 60) return `${minutes}m ago`
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) return `${hours}h ago`
+    const days = Math.floor(hours / 24)
+    return `${days}d ago`
+  }
+
+  useEffect(() => {
+    fetchJobs()
+  }, [fetchJobs])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (lastUpdated) setLastUpdated(new Date(lastUpdated))
+    }, 60000)
+    return () => clearInterval(interval)
+  }, [lastUpdated])
 
   const filtered = displayedJobs.filter(job => {
-    const matchSearch = job.title.toLowerCase().includes(search.toLowerCase())
+    const matchSearch = job.title.toLowerCase().includes(search.toLowerCase()) ||
+                       job.company.toLowerCase().includes(search.toLowerCase())
     const matchType = typeFilter === 'All' || job.type === typeFilter
     const matchLocation = locationFilter === 'All' || job.location === locationFilter
     return matchSearch && matchType && matchLocation
   })
 
-  const loadMore = useCallback(() => {
-    setDisplayedJobs(prev => {
-      const currentLength = prev.length
-      const newJobs = allJobs.slice(0, currentLength + 50)
-      return newJobs
-    })
-  }, [])
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && displayedJobs.length < allJobs.length) {
-          loadMore()
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current)
-    }
-
-    return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current)
-      }
-    }
-  }, [displayedJobs.length, loadMore])
-
   return (
     <div className="w-full">
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="fixed top-0 left-0 right-0 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Jobs</h1>
-        <button
-          onClick={() => setShowSearch(!showSearch)}
-          className="text-cream hover:text-coral transition-colors"
-          aria-label="Toggle search"
-        >
-          <MagnifyingGlassIcon width={20} height={20} />
-        </button>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {lastUpdated && (
+              <p className="text-cream/50 font-mono text-xs">
+                Updated {getRelativeTime(lastUpdated)}
+              </p>
+            )}
+            <button
+              onClick={fetchJobs}
+              className="text-cream hover:text-coral transition-colors"
+              aria-label="Refresh jobs"
+              disabled={isLoading}
+            >
+              <ReloadIcon width={20} height={20} className={isLoading ? 'animate-spin' : ''} />
+            </button>
+          </div>
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="text-cream hover:text-coral transition-colors"
+            aria-label="Toggle search"
+          >
+            <MagnifyingGlassIcon width={20} height={20} />
+          </button>
+        </div>
       </motion.div>
 
       <div className="px-4 md:px-8 py-4 pt-24">
@@ -149,7 +143,7 @@ export default function Jobs({ onNavigate }: JobsProps) {
               style={{ backgroundColor: 'white', color: 'black', borderRadius: 0 }}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-dark mb-2">TYPE</label>
                 <select
@@ -160,20 +154,6 @@ export default function Jobs({ onNavigate }: JobsProps) {
                 >
                   {types.map(t => (
                     <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-dark mb-2">SALARY</label>
-                <select
-                  value={salaryFilter}
-                  onChange={(e) => setSalaryFilter(e.target.value)}
-                  className="w-full px-4 py-3 border border-black transition-colors focus:outline-none focus:border-black focus:ring-0"
-                  style={{ backgroundColor: 'white', color: 'black', borderRadius: 0 }}
-                >
-                  {salaries.map(s => (
-                    <option key={s} value={s}>{s}</option>
                   ))}
                 </select>
               </div>
@@ -195,34 +175,40 @@ export default function Jobs({ onNavigate }: JobsProps) {
           </motion.div>
         )}
 
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-0">
-          {filtered.map((job) => (
-            <motion.div
-              key={job.id}
-              variants={itemVariants}
-              className="bg-surface pl-0 pr-6 py-6 border-t border-border transition-colors cursor-pointer hover:bg-surface/80"
-              onClick={() => onNavigate?.('job-detail', job.id)}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-xl font-light mb-1">{job.title}</h3>
-                  <p className="text-cream/60 font-mono text-sm">{job.type}</p>
+        {isLoading ? (
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <motion.div key={i} variants={itemVariants} className="bg-surface pl-0 pr-6 py-6 border-t border-border animate-pulse" />
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-0">
+            {filtered.map((job, idx) => (
+              <motion.a
+                key={job.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 + idx * 0.08 }}
+                href={job.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-surface pl-0 pr-6 py-6 border-t border-border transition-colors cursor-pointer hover:bg-surface/80 flex flex-col"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-light mb-1">{job.title}</h3>
+                    <p className="text-cream/60 font-mono text-sm">{job.type} • {job.company}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <p className="text-3xl md:text-6xl text-mint font-sans font-medium">{job.salary}</p>
+                    <p className="text-cream/60 font-mono text-xs">{job.location}</p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <p className="font-mono text-mint text-sm font-semibold">{job.budget}</p>
-                  <p className="text-cream/60 font-mono text-xs">{job.salary}</p>
-                </div>
-              </div>
-              <p className="text-cream/50 font-mono text-xs">{job.location}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <div ref={loaderRef} className="py-8 text-center">
-          {displayedJobs.length < allJobs.length && (
-            <p className="text-cream/50 font-mono text-sm">Loading more...</p>
-          )}
-        </div>
+                <p className="text-cream/50 font-mono text-xs">via {job.board}</p>
+              </motion.a>
+            ))}
+          </motion.div>
+        )}
       </div>
     </div>
   )

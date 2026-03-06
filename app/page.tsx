@@ -1,22 +1,22 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Dashboard from '@/components/pages/Dashboard'
 import Contracts from '@/components/pages/Contracts'
 import TimeTracking from '@/components/pages/TimeTracking'
 import Settings from '@/components/pages/Settings'
 import Jobs from '@/components/pages/Jobs'
-import JobDetail from '@/components/pages/JobDetail'
 import Navigation from '@/components/Navigation'
 import CreateContractPanel from '@/components/CreateContractPanel'
+import { ToastProvider, useToast } from '@/components/Toast'
 
 const pages = ['dashboard', 'contracts', 'jobs', 'time', 'settings'] as const
 type PageType = typeof pages[number]
 
-export default function Home() {
-  const [currentPage, setCurrentPage] = useState<PageType>('dashboard')
-  const [selectedJobId, setSelectedJobId] = useState<number | null>(null)
+function HomeContent() {
+  const { addToast } = useToast()
+  const [currentPage, setCurrentPage] = useState<PageType>('jobs')
   const [showCreateContract, setShowCreateContract] = useState(false)
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null)
   const [totalTime, setTotalTime] = useState('0h 0m')
@@ -27,7 +27,14 @@ export default function Home() {
     const today = new Date()
     return today.toISOString().split('T')[0]
   }
-  const [newContract, setNewContract] = useState({ client: '', rate: '', startDate: getTodayDate() })
+
+  const formatTimerDisplay = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+  }
+  const [newContract, setNewContract] = useState({ freelancer: '', client: '', rate: '', startDate: getTodayDate(), endDate: getTodayDate() })
   const [contracts, setContracts] = useState<any[]>([])
   const [entries, setEntries] = useState<any[]>([])
   const touchStart = useRef(0)
@@ -101,6 +108,10 @@ export default function Home() {
   }, [currentPage])
 
   useEffect(() => {
+    setShowCreateContract(false)
+  }, [currentPage])
+
+  useEffect(() => {
     let interval: NodeJS.Timeout
     if (isTimerRunning) {
       interval = setInterval(() => {
@@ -118,23 +129,30 @@ export default function Home() {
     if (newContract.client && newContract.rate) {
       const newContractData = {
         id: Date.now(),
+        freelancer: newContract.freelancer,
         client: newContract.client,
         rate: newContract.rate,
         startDate: newContract.startDate,
+        endDate: newContract.endDate,
         status: 'active'
       }
       const updated = [...contracts, newContractData]
       setContracts(updated)
       localStorage.setItem('contracts', JSON.stringify(updated))
-      setNewContract({ client: '', rate: '', startDate: getTodayDate() })
+      setNewContract({ freelancer: '', client: '', rate: '', startDate: getTodayDate(), endDate: getTodayDate() })
       setShowCreateContract(false)
+      addToast(`Contract created: ${newContract.client}`, 'success')
     }
   }
 
   const handleDeleteContract = (id: number) => {
+    const contract = contracts.find(c => c.id === id)
     const updated = contracts.filter((c) => c.id !== id)
     setContracts(updated)
     localStorage.setItem('contracts', JSON.stringify(updated))
+    if (contract) {
+      addToast(`Contract deleted: ${contract.client}`, 'success')
+    }
   }
 
   const handleTrackTime = (contractId: number) => {
@@ -172,15 +190,21 @@ export default function Home() {
           animate={{ scaleX: 1, opacity: 0, originX: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         />
-        {isTimerRunning && (
-          <motion.div
-            className="fixed top-8 left-8 z-30"
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          >
-            <p className="font-mono text-sm text-mint">Timer Running...</p>
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {isTimerRunning && (
+            <motion.div
+              className="fixed bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 z-30"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="bg-white border border-black px-4 py-3 text-dark text-sm font-medium font-mono uppercase">
+                {formatTimerDisplay(timerSeconds)}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <motion.div
           key={currentPage}
           initial={{ opacity: 0 }}
@@ -193,20 +217,7 @@ export default function Home() {
             if (p === 'contracts') setShowCreateContract(true)
             else setCurrentPage(p as PageType)
           }} contracts={contracts} onDeleteContract={handleDeleteContract} onTrackTime={handleTrackTime} />}
-          {currentPage === 'jobs' && <Jobs onNavigate={(page, jobId) => {
-            if (page === 'job-detail' && jobId) {
-              setSelectedJobId(jobId)
-              setCurrentPage('jobs' as PageType)
-            } else {
-              setCurrentPage(page as PageType)
-            }
-          }} />}
-          {selectedJobId && currentPage === 'jobs' && <JobDetail jobId={selectedJobId} onNavigate={(page) => {
-            setSelectedJobId(null)
-            if (page !== 'jobs') {
-              setCurrentPage(page as PageType)
-            }
-          }} />}
+          {currentPage === 'jobs' && <Jobs />}
           {currentPage === 'time' && <TimeTracking contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} entries={entries} />}
           {currentPage === 'settings' && <Settings onClearEntries={() => { setTotalTime('0h 0m'); setTimerSeconds(0); timerRef.current = 0 }} />}
         </motion.div>
@@ -216,7 +227,7 @@ export default function Home() {
           isOpen={showCreateContract}
           onClose={() => {
             setShowCreateContract(false)
-            setNewContract({ client: '', rate: '', startDate: getTodayDate() })
+            setNewContract({ freelancer: '', client: '', rate: '', startDate: getTodayDate(), endDate: getTodayDate() })
           }}
           newContract={newContract}
           onContractChange={setNewContract}
@@ -224,5 +235,13 @@ export default function Home() {
         />
       </div>
     </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <ToastProvider>
+      <HomeContent />
+    </ToastProvider>
   )
 }

@@ -18,8 +18,8 @@ const inputStyle = `
 interface CreateContractPanelProps {
   isOpen: boolean
   onClose: () => void
-  newContract: { client: string; rate: string; startDate: string }
-  onContractChange: (contract: { client: string; rate: string; startDate: string }) => void
+  newContract: { freelancer: string; client: string; rate: string; startDate: string; endDate: string }
+  onContractChange: (contract: { freelancer: string; client: string; rate: string; startDate: string; endDate: string }) => void
   onSave: () => void
 }
 
@@ -56,6 +56,22 @@ export default function CreateContractPanel({
         <div className="bg-dark/50 p-4 rounded text-sm text-dark/70 mb-4">
           Payments are handled outside of this app. This contract binding is for legal record-keeping only.
         </div>
+        <div>
+          <label className="block text-sm font-medium text-dark mb-2">
+            Freelancer Name
+          </label>
+          <input
+            type="text"
+            value={newContract.freelancer}
+            onChange={(e) =>
+              onContractChange({ ...newContract, freelancer: e.target.value })
+            }
+            className="w-full px-4 py-3 border border-black transition-colors focus:outline-none focus:border-black focus:ring-0"
+            style={{ backgroundColor: 'white', color: 'black', borderRadius: 0 }}
+            placeholder="Your name"
+          />
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-dark mb-2">
             Client Name
@@ -97,6 +113,21 @@ export default function CreateContractPanel({
             value={newContract.startDate}
             onChange={(e) =>
               onContractChange({ ...newContract, startDate: e.target.value })
+            }
+            className="w-full px-4 py-3 border border-black transition-colors focus:outline-none focus:border-black focus:ring-0"
+            style={{ backgroundColor: 'white', color: 'black', borderRadius: 0 }}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-dark mb-2">
+            End Date
+          </label>
+          <input
+            type="date"
+            value={newContract.endDate}
+            onChange={(e) =>
+              onContractChange({ ...newContract, endDate: e.target.value })
             }
             className="w-full px-4 py-3 border border-black transition-colors focus:outline-none focus:border-black focus:ring-0"
             style={{ backgroundColor: 'white', color: 'black', borderRadius: 0 }}
