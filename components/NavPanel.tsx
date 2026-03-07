@@ -60,7 +60,7 @@ export default function NavPanel({
             className="fixed inset-y-0 left-0 w-80 bg-white md:bg-dark z-50 overflow-y-auto border-r border-cream/10"
           >
             {/* Header */}
-            <div className="sticky top-0 bg-white md:bg-dark px-6 py-4 flex items-center justify-between border-b border-cream/10">
+            <div className="sticky top-0 bg-white md:bg-dark px-6 py-4 flex items-center justify-between">
               <h2 className="text-lg font-light text-dark md:text-cream">Menu</h2>
               <button
                 onClick={onClose}
