@@ -58,6 +58,21 @@ export default function Settings() {
           <motion.h2 variants={itemVariants}
             className="text-xl font-light mb-4"
           >
+            About
+          </motion.h2>
+
+          <motion.div
+            variants={itemVariants}
+            className="bg-surface pl-0 pr-0 py-4 border-t border-border"
+          >
+            <p className="text-sm text-cream/70 leading-relaxed">
+              This app helps freelancers manage contracts, track time spent on projects, and discover relevant job opportunities. Built to simplify the admin work of contract work so you can focus on what matters.
+            </p>
+          </motion.div>
+
+          <motion.h2 variants={itemVariants}
+            className="text-xl font-light mb-4 mt-12 pt-8 border-t border-border"
+          >
             Job Sources
           </motion.h2>
 

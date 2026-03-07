@@ -192,7 +192,7 @@ export default function Jobs() {
 
       {isLoading ? (
         <div className="flex items-center justify-center min-h-[100dvh]">
-          <motion.p variants={breathingVariants} animate="animate" className="text-cream/50 font-mono text-sm">Gettin'</motion.p>
+          <motion.p variants={breathingVariants} animate="animate" className="text-cream/50 font-mono text-sm">Grabbin' jobs</motion.p>
         </div>
       ) : (
         <div ref={mainRef} className="px-4 md:px-8 py-4 pt-24 pb-12 overflow-y-auto">
@@ -249,9 +249,9 @@ export default function Jobs() {
             {filtered.map((job, idx) => (
               <motion.a
                 key={job.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: idx * 0.05 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: idx * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
                 href={job.url}
                 target="_blank"
                 rel="noopener noreferrer"
