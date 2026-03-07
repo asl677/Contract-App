@@ -32,18 +32,39 @@ export default function ContractDetailPanel({
 }: ContractDetailPanelProps) {
   if (!contract) return null
 
-  const handleDownloadCSV = () => {
-    // Filter entries for this contract
-    const contractEntries = entries.filter(entry => entry.contract === contract.client)
+  // Calculate total hours tracked for this contract
+  const contractEntries = entries.filter(entry => entry.contract === contract.client)
+  const totalSeconds = contractEntries.reduce((sum, entry) => {
+    const match = entry.duration.match(/(\d+)h\s*(\d+)m\s*(\d+)s/)
+    if (match) {
+      const h = parseInt(match[1]) || 0
+      const m = parseInt(match[2]) || 0
+      const s = parseInt(match[3]) || 0
+      return sum + h * 3600 + m * 60 + s
+    }
+    return sum
+  }, 0)
 
+  const totalHours = Math.floor(totalSeconds / 3600)
+  const totalMinutes = Math.floor((totalSeconds % 3600) / 60)
+  const totalSecs = totalSeconds % 60
+  const totalEarnings = contractEntries.reduce((sum, entry) => {
+    const amount = parseFloat(entry.earnings?.replace('$', '') || '0')
+    return sum + amount
+  }, 0)
+
+  const handleDownloadCSV = () => {
     // Create CSV content
     const headers = ['Date', 'Duration', 'Rate', 'Earnings']
     const rows = contractEntries.map(entry => [
       new Date().toISOString().split('T')[0], // Date (using today as placeholder since entries don't have dates)
       entry.duration,
-      entry.rate,
-      entry.earnings
+      contract.rate,
+      entry.earnings || '$0.00'
     ])
+
+    // Add summary row
+    rows.push(['', `${totalHours}h ${totalMinutes}m ${totalSecs}s`, 'Total', `$${totalEarnings.toFixed(2)}`])
 
     const csvContent = [
       headers.join(','),
@@ -129,6 +150,19 @@ export default function ContractDetailPanel({
               Status
             </label>
             <p className="text-dark font-light capitalize">{contract.status}</p>
+          </div>
+
+          <div className="border-t border-black/10 pt-4 mt-4">
+            <label className="block text-sm font-medium text-dark mb-2">
+              Hours Tracked
+            </label>
+            <p className="text-2xl font-light text-dark mb-3">
+              {totalHours}h {totalMinutes}m {totalSecs}s
+            </p>
+            <div className="text-sm text-dark/70">
+              <p>Entries: {contractEntries.length}</p>
+              <p>Total Earnings: <span className="font-medium text-dark">${totalEarnings.toFixed(2)}</span></p>
+            </div>
           </div>
 
           <div className="flex gap-4 text-sm">
