@@ -160,6 +160,7 @@ export default function CreateContractPanel({
             Cancel
           </button>
         </div>
+      </div>
     </motion.div>
     </>
   )
