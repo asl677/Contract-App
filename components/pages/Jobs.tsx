@@ -77,7 +77,12 @@ export default function Jobs() {
 
   const types = ['All', 'Frontend', 'Backend', 'Full Stack', 'Design', 'Product', 'DevOps', 'Data Science', 'Mobile', 'AI/ML', 'Security', 'Cloud']
   const locations = ['All', 'Remote', 'San Francisco, CA', 'New York, NY', 'Austin, TX', 'Seattle, WA', 'Los Angeles, CA', 'Chicago, IL', 'Boston, MA']
-  const sources = ['All', 'Greenhouse', 'Y Combinator']
+
+  // Dynamically derive sources from actual jobs
+  const uniqueSources = useMemo(() => {
+    const sources = new Set(displayedJobs.map(job => job.board))
+    return ['All', ...Array.from(sources).sort()]
+  }, [displayedJobs])
 
   const fetchJobs = useCallback(async (newOffset: number = 0) => {
     if (newOffset === 0) {
@@ -261,7 +266,7 @@ export default function Jobs() {
               <CustomDropdown
                 value={sourceFilter}
                 onChange={(e) => setSourceFilter(e)}
-                options={sources}
+                options={uniqueSources}
                 displayFormat={(v) => v === 'All' ? 'All Sources' : v}
               />
             </div>
@@ -292,7 +297,7 @@ export default function Jobs() {
               <CustomDropdown
                 value={sourceFilter}
                 onChange={(e) => setSourceFilter(e)}
-                options={sources}
+                options={uniqueSources}
                 displayFormat={(v) => v === 'All' ? 'All Sources' : v}
               />
             </div>
