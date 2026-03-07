@@ -60,11 +60,11 @@ export default function Contracts({ onNavigate, contracts = [], onDeleteContract
         </motion.div>
       ) : (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-0">
-          {contracts.map((contract) => (
+          {contracts.map((contract, idx) => (
             <motion.div
               key={contract.id}
               variants={itemVariants}
-              className="bg-surface pl-0 pr-6 py-6 border-t border-border transition-colors cursor-pointer"
+              className={`bg-surface pl-0 pr-6 py-6 transition-colors cursor-pointer ${idx > 0 ? 'border-t border-border' : ''}`}
             >
               <div className="flex items-start justify-between mb-4">
                 <div>

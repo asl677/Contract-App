@@ -53,7 +53,9 @@ export default function Jobs() {
     try {
       const response = await fetch('/api/jobs')
       const jobs = await response.json()
-      setDisplayedJobs(jobs.slice(0, 50))
+      const jobsSlice = jobs.slice(0, 50)
+
+      setDisplayedJobs(jobsSlice)
       setLastUpdated(new Date())
     } catch (error) {
       console.error('Failed to fetch jobs:', error)
