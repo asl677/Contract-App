@@ -116,6 +116,10 @@ export default function Notes() {
               style={{
                 color: '#000000',
                 whiteSpace: 'pre-wrap',
+                fontFamily: 'inherit',
+                fontSize: 'inherit',
+                fontWeight: 'inherit',
+                lineHeight: 'inherit',
               }}
             />
 

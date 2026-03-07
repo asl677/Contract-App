@@ -199,9 +199,9 @@ export default function TimeTracking({ contracts = [], selectedContractId = null
               variants={itemVariants}
               layout
             >
-              <motion.div
-                className="absolute top-0 left-0 right-0 h-px bg-border"
-                variants={itemVariants}
+              <div
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{ backgroundColor: '#2a2820' }}
               />
               <div
                 className="flex items-start justify-between py-3"
