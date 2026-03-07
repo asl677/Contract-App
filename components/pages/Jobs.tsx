@@ -206,14 +206,14 @@ export default function Jobs() {
           <motion.p variants={breathingVariants} animate="animate" className="text-cream/50 font-mono text-sm">Grabbin' jobs</motion.p>
         </div>
       ) : (
-        <div ref={mainRef} className="px-4 md:px-8 py-4 pt-24 pb-12 overflow-y-auto">
+        <div ref={mainRef} className={`px-4 md:px-8 py-4 pb-12 overflow-y-auto ${showSearch ? 'pt-80' : 'pt-24'}`}>
           {showSearch && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="sticky top-0 left-0 right-0 z-30 bg-dark mb-2 pb-6 space-y-4"
+            className="fixed top-24 left-0 right-0 md:left-20 z-30 bg-dark px-4 md:px-8 pb-6 space-y-4"
           >
             <input
               type="text"
