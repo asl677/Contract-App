@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { MagnifyingGlassIcon, ReloadIcon } from '@radix-ui/react-icons'
 import { useToast } from '@/components/Toast'
 
@@ -149,14 +149,14 @@ export default function Jobs() {
     }
   }, [hasMore, displayedJobs.length, endOfListShown, addToast])
 
-  const filtered = displayedJobs.filter(job => {
+  const filtered = useMemo(() => displayedJobs.filter(job => {
     const matchSearch = job.title.toLowerCase().includes(search.toLowerCase()) ||
                        job.company.toLowerCase().includes(search.toLowerCase())
     const matchType = typeFilter === 'All' || job.type === typeFilter
     const matchLocation = locationFilter === 'All' || job.location === locationFilter
     const isNotFullTime = job.duration !== 'Full-time'
     return matchSearch && matchType && matchLocation && isNotFullTime
-  })
+  }), [displayedJobs, search, typeFilter, locationFilter])
 
   return (
     <div className="w-full">
