@@ -23,11 +23,11 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 15 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6 },
+    transition: { duration: 0.5 },
   },
 }
 
@@ -201,6 +201,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
     <div className="w-full overflow-x-hidden" style={{ marginRight: isMd && showFilters ? 384 : 0, transition: 'margin-right 0.3s ease-in-out' }}>
       <motion.div
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
+        style={{ marginRight: isMd && showFilters ? 384 : 0, transition: 'margin-right 0.3s ease-in-out' }}
         variants={itemVariants}
         initial="hidden"
         animate="visible"
