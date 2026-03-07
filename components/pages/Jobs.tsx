@@ -171,7 +171,7 @@ export default function Jobs() {
 
       {isLoading ? (
         <div className="flex items-center justify-center min-h-[100dvh]">
-          <p className="text-cream/50 font-mono text-sm">Fetching jobs...</p>
+          <p className="text-cream/50 font-mono text-sm">Gettin'</p>
         </div>
       ) : (
         <div ref={mainRef} className="px-4 md:px-8 py-4 pt-24 pb-32 overflow-y-auto">
