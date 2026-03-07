@@ -42,17 +42,9 @@ export default function CustomDropdown({
     <div ref={dropdownRef} className="relative w-full">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 bg-white border border-black text-black text-left transition-all duration-200 flex items-center justify-between"
+        className="w-full px-4 py-3 bg-white border border-black text-black text-left transition-all duration-200"
       >
         <span>{displayFormat(value)}</span>
-        <svg
-          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
       </button>
 
       <AnimatePresence>
