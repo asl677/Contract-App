@@ -12,24 +12,24 @@ const itemVariants = {
   },
 }
 
-interface SettingsProps {
-  onClearEntries?: () => void
-}
-
-export default function Settings({ onClearEntries }: SettingsProps) {
-  const [showConfirm, setShowConfirm] = useState(false)
+export default function Settings() {
+  const [enabledSources, setEnabledSources] = useState({
+    Lever: true,
+    Greenhouse: true,
+    Workable: true,
+  })
 
   const jobSources = [
-    { name: 'LinkedIn', status: 'active' },
-    { name: 'AngelList', status: 'active' },
-    { name: 'Upwork', status: 'active' },
-    { name: 'Contra', status: 'active' },
+    { name: 'Lever' },
+    { name: 'Greenhouse' },
+    { name: 'Workable' },
   ]
 
-  const handleClear = () => {
-    localStorage.removeItem('timeEntries')
-    onClearEntries?.()
-    setShowConfirm(false)
+  const toggleSource = (name: string) => {
+    setEnabledSources(prev => ({
+      ...prev,
+      [name]: !prev[name as keyof typeof prev]
+    }))
   }
 
   return (
@@ -41,40 +41,6 @@ export default function Settings({ onClearEntries }: SettingsProps) {
       </motion.h1>
 
       <div className="px-4 md:px-8 py-4 pt-24">
-        <motion.div variants={itemVariants} initial="hidden" animate="visible"
-          className="bg-surface pl-0 pr-0 py-0 mb-8"
-        >
-          <button
-            onClick={() => setShowConfirm(true)}
-            className="px-4 py-3 text-left text-coral hover:bg-dark/50 transition-colors font-mono text-sm"
-          >
-            Clear all time entries
-          </button>
-        </motion.div>
-
-        {showConfirm && (
-          <motion.div variants={itemVariants} initial="hidden" animate="visible"
-            className="bg-surface pl-0 pr-0 py-0 mb-8"
-          >
-            <div className="px-4 py-3 text-cream text-sm mb-3">
-              Are you sure? This cannot be undone.
-            </div>
-            <div className="flex gap-2 px-4 pb-3">
-              <button
-                onClick={handleClear}
-                className="flex-1 px-4 py-2 bg-coral text-dark hover:bg-coral/90 font-mono text-sm transition-colors"
-              >
-                Clear
-              </button>
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="flex-1 px-4 py-2 border border-cream/30 text-cream hover:bg-dark/50 font-mono text-sm transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </motion.div>
-        )}
 
         <motion.h2 variants={itemVariants} initial="hidden" animate="visible"
           className="text-xl font-light mb-4"
@@ -93,10 +59,20 @@ export default function Settings({ onClearEntries }: SettingsProps) {
               className={`bg-surface pl-0 pr-6 py-4 flex items-center justify-between ${idx > 0 ? 'border-t border-border' : ''}`}
             >
               <span className="font-mono text-sm">{source.name}</span>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-mint rounded-full"></div>
-                <span className="text-cream/60 font-mono text-xs uppercase">{source.status}</span>
-              </div>
+              <button
+                onClick={() => toggleSource(source.name)}
+                className={`w-10 h-6 rounded-full transition-all ${
+                  enabledSources[source.name as keyof typeof enabledSources]
+                    ? 'bg-mint'
+                    : 'bg-cream/20'
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full bg-dark transition-transform ${
+                  enabledSources[source.name as keyof typeof enabledSources]
+                    ? 'translate-x-4'
+                    : 'translate-x-0'
+                }`} />
+              </button>
             </motion.div>
           ))}
         </div>

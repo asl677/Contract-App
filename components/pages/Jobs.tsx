@@ -134,12 +134,7 @@ export default function Jobs() {
                        job.company.toLowerCase().includes(search.toLowerCase())
     const matchType = typeFilter === 'All' || job.type === typeFilter
     const matchLocation = locationFilter === 'All' || job.location === locationFilter
-    // Filter for contract and freelance roles
-    const isContractOrFreelance = job.title.toLowerCase().includes('contract') ||
-                                  job.title.toLowerCase().includes('freelance') ||
-                                  job.title.toLowerCase().includes('consultant') ||
-                                  job.title.toLowerCase().includes('short-term')
-    return matchSearch && matchType && matchLocation && isContractOrFreelance
+    return matchSearch && matchType && matchLocation
   })
 
   return (
@@ -174,8 +169,13 @@ export default function Jobs() {
         </div>
       </motion.div>
 
-      <div ref={mainRef} className="px-4 md:px-8 py-4 pt-24 pb-32 overflow-y-auto" style={{ height: 'calc(100dvh - 80px)' }}>
-        {showSearch && (
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-[100dvh]">
+          <p className="text-cream/50 font-mono text-sm">Fetching jobs...</p>
+        </div>
+      ) : (
+        <div ref={mainRef} className="px-4 md:px-8 py-4 pt-24 pb-32 overflow-y-auto">
+          {showSearch && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -224,15 +224,6 @@ export default function Jobs() {
           </motion.div>
         )}
 
-        {isLoading ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center justify-center min-h-[200px]"
-          >
-            <p className="text-cream/50 font-mono text-sm">Fetching jobs...</p>
-          </motion.div>
-        ) : (
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-0">
             {filtered.map((job, idx) => (
               <motion.a
@@ -257,7 +248,6 @@ export default function Jobs() {
               </motion.a>
             ))}
           </motion.div>
-        )}
 
         {isLoadingMore && (
           <motion.div
@@ -279,6 +269,7 @@ export default function Jobs() {
           </motion.div>
         )}
       </div>
+      )}
     </div>
   )
 }

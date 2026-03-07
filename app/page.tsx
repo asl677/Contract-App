@@ -212,7 +212,7 @@ function HomeContent() {
           }} contracts={contracts} onDeleteContract={handleDeleteContract} onTrackTime={handleTrackTime} />}
           {currentPage === 'jobs' && <Jobs />}
           {currentPage === 'time' && <TimeTracking contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} entries={entries} />}
-          {currentPage === 'settings' && <Settings onClearEntries={() => { setTotalTime('0h 0m'); setTimerSeconds(0); timerRef.current = 0 }} />}
+          {currentPage === 'settings' && <Settings />}
         </motion.div>
       </main>
 
