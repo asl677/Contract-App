@@ -301,7 +301,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <h3 className="text-xl font-light mb-1">{job.title}</h3>
-                    <p className="text-cream/60 font-mono text-sm">{job.type} • Remote • {getSalaryRange(job.salary)}</p>
+                    <p className="text-cream/60 font-mono text-sm">{job.type} <span className="text-xs">•</span> Remote <span className="text-xs">•</span> {getSalaryRange(job.salary)}</p>
                   </div>
                   <div className="ml-auto pl-4 max-w-[140px] md:max-w-none">
                     <p className="text-xl md:text-3xl text-mint font-sans font-medium">{job.company}</p>
