@@ -162,17 +162,28 @@ async function fetchYCJobs(): Promise<Job[]> {
       throw new Error('No YC jobs found in HN job feed')
     }
 
-    const result = jobsToReturn.map((job, idx) => ({
-      id: Math.random() * 10000,
-      title: job.title,
-      company: job.company || 'Company',
-      type: getJobType(job.title),
-      salary: generateSalary(job.title, job.company || 'Company'),
-      location: job.location || 'Remote',
-      duration: ['3 months', '6 months', '1 year', 'Full-time', 'Contract'][idx % 5],
-      url: job.url,
-      board: 'Y Combinator'
-    }))
+    const result = jobsToReturn.map((job, idx) => {
+      // Generate consistent ID from job content hash
+      const idSource = `${job.title}${job.company}${job.url}`
+      let hash = 0
+      for (let i = 0; i < idSource.length; i++) {
+        const char = idSource.charCodeAt(i)
+        hash = ((hash << 5) - hash) + char
+        hash = hash & hash // Convert to 32bit integer
+      }
+
+      return {
+        id: Math.abs(hash),
+        title: job.title,
+        company: job.company || 'Company',
+        type: getJobType(job.title),
+        salary: generateSalary(job.title, job.company || 'Company'),
+        location: job.location || 'Remote',
+        duration: ['3 months', '6 months', '1 year', 'Full-time', 'Contract'][idx % 5],
+        url: job.url,
+        board: 'Y Combinator'
+      }
+    })
 
     console.log('Fetched Y Combinator/HN jobs:', result.length)
     return result
@@ -195,17 +206,27 @@ async function fetchYCJobs(): Promise<Job[]> {
       { title: 'Security Engineer at YC Company', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://news.ycombinator.com/jobs/12' },
     ]
 
-    const fallbackResult = fallbackJobs.map((job, idx) => ({
-      id: Math.random() * 10000,
-      title: job.title,
-      company: job.company,
-      type: getJobType(job.title),
-      salary: generateSalary(job.title, job.company),
-      location: job.location,
-      duration: ['3 months', '6 months', '1 year', 'Full-time', 'Contract'][idx % 5],
-      url: job.url,
-      board: 'Y Combinator'
-    }))
+    const fallbackResult = fallbackJobs.map((job, idx) => {
+      const idSource = `${job.title}${job.company}${job.url}`
+      let hash = 0
+      for (let i = 0; i < idSource.length; i++) {
+        const char = idSource.charCodeAt(i)
+        hash = ((hash << 5) - hash) + char
+        hash = hash & hash
+      }
+
+      return {
+        id: Math.abs(hash),
+        title: job.title,
+        company: job.company,
+        type: getJobType(job.title),
+        salary: generateSalary(job.title, job.company),
+        location: job.location,
+        duration: ['3 months', '6 months', '1 year', 'Full-time', 'Contract'][idx % 5],
+        url: job.url,
+        board: 'Y Combinator'
+      }
+    })
 
     console.log('Fallback Y Combinator jobs count:', fallbackResult.length)
     return fallbackResult
@@ -236,8 +257,16 @@ async function fetchJobsFromSource(board: string, slug: string, company: string)
       const durations = ['3 months', '6 months', '1 year', 'Full-time', 'Contract']
       const duration = durations[(idx + company.charCodeAt(0)) % durations.length]
 
+      const idSource = `${job.title}${company}${job.link}`
+      let hash = 0
+      for (let i = 0; i < idSource.length; i++) {
+        const char = idSource.charCodeAt(i)
+        hash = ((hash << 5) - hash) + char
+        hash = hash & hash
+      }
+
       return {
-        id: Math.random() * 10000,
+        id: Math.abs(hash),
         title: job.title,
         company: company,
         type: getJobType(job.title),
