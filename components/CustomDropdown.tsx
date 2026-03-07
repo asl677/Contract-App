@@ -18,7 +18,13 @@ export default function CustomDropdown({
   displayFormat = (v) => v
 }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isSafari, setIsSafari] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const isSafariBrowser = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    setIsSafari(isSafariBrowser)
+  }, [])
 
   useEffect(() => {
     if (!isOpen) return
@@ -64,7 +70,7 @@ export default function CustomDropdown({
                   onClick={() => handleSelect(option)}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.15, delay: idx * 0.02 }}
+                  transition={{ duration: 0.15, delay: isSafari ? 0 : idx * 0.02 }}
                   className={`w-full px-4 py-2 text-left text-sm transition-colors whitespace-nowrap ${
                     value === option
                       ? 'bg-black/10 text-black'

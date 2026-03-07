@@ -64,7 +64,7 @@ export default function Dashboard({ onNavigate, contracts = [], entries = [] }: 
               <motion.h2 variants={itemVariants} className="text-2xl font-light mb-6">
                 Active Contracts
               </motion.h2>
-              {contracts.map((contract, idx) => (
+              {contracts.map((contract) => (
                 <motion.div
                   key={`${contract.id}-${contract.url}`}
                   className="relative"
@@ -99,7 +99,7 @@ export default function Dashboard({ onNavigate, contracts = [], entries = [] }: 
               <motion.h2 variants={itemVariants} className="text-2xl font-light mb-6">
                 Hours Tracked
               </motion.h2>
-              {entries.slice(0, 5).map((entry, idx) => (
+              {entries.slice(0, 5).map((entry) => (
                 <motion.div
                   key={entry.id}
                   className="relative"
@@ -139,8 +139,8 @@ export default function Dashboard({ onNavigate, contracts = [], entries = [] }: 
 
           {/* Empty State */}
           {contracts.length === 0 && entries.length === 0 && (
-            <motion.div variants={itemVariants} className="text-center py-12">
-              <p className="text-cream/40">No contracts or entries yet</p>
+            <motion.div variants={itemVariants} className="text-center py-12 flex items-center justify-center min-h-[100dvh] -mt-[100px]">
+              
               <button
                 onClick={() => onNavigate('contracts')}
                 className="mt-4 text-coral hover:text-coral/80 font-mono text-sm transition-colors"

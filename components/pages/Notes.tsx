@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
 const containerVariants = {
@@ -23,149 +23,76 @@ const itemVariants = {
   },
 }
 
-interface Note {
-  id: string
-  text: string
-  isBold: boolean
-  indent: number
-}
-
 export default function Notes() {
-  const [notes, setNotes] = useState<Note[]>([])
-  const [fontWeight, setFontWeight] = useState<'regular' | 'bold'>('regular')
-  const canvasRef = useRef<HTMLDivElement>(null)
-  const cursorRef = useRef<HTMLDivElement>(null)
-  const measureRef = useRef<HTMLDivElement>(null)
-  const [cursorLeft, setCursorLeft] = useState(0)
+  const [text, setText] = useState('')
+
+  const convertHyphensToBullets = (str: string) => {
+    return str.replace(/- /g, '• ')
+  }
 
   // Load notes from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('notes')
     if (saved) {
-      setNotes(JSON.parse(saved))
+      try {
+        // Try to parse as JSON (old format)
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed[0]?.text) {
+          setText(convertHyphensToBullets(parsed[0].text))
+        }
+      } catch {
+        // If not JSON, treat as plain text (new format)
+        setText(convertHyphensToBullets(saved))
+      }
     }
   }, [])
 
   // Save notes to localStorage
   useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes))
-  }, [notes])
-
-  const handleInput = (text: string) => {
-    // Simple note storage - just one note
-    if (notes.length === 0 && text) {
-      const newNote: Note = {
-        id: Date.now().toString(),
-        text,
-        isBold: fontWeight === 'bold',
-        indent: 0,
-      }
-      setNotes([newNote])
-    } else if (notes.length > 0) {
-      const updatedNotes = [...notes]
-      updatedNotes[0].text = text
-      updatedNotes[0].isBold = fontWeight === 'bold'
-      setNotes(updatedNotes)
-    }
-  }
-
-  // Update cursor position based on text content
-  useEffect(() => {
-    if (canvasRef.current && measureRef.current) {
-      const text = canvasRef.current.innerText.replace(/^• /, '')
-      measureRef.current.innerText = text
-      const width = measureRef.current.offsetWidth
-      setCursorLeft(width)
-    }
-  }, [notes])
-
-  // Create a cursor animation
-  useEffect(() => {
-    const blink = setInterval(() => {
-      if (cursorRef.current) {
-        cursorRef.current.style.opacity = cursorRef.current.style.opacity === '0' ? '1' : '0'
-      }
-    }, 530)
-    return () => clearInterval(blink)
-  }, [])
+    localStorage.setItem('notes', text)
+  }, [text])
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="flex flex-col min-h-screen bg-dark text-cream px-4 md:px-8 py-8 pb-24 md:pb-8"
-    >
-      {/* Header */}
-      <motion.div variants={itemVariants} className="mb-8">
-        <h1 className="text-4xl md:text-6xl font-light tracking-tight leading-none mb-2">
-          Notes
-        </h1>
+    <div className="w-full">
+      <motion.div variants={itemVariants} initial="hidden" animate="visible"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-[22px] flex items-center justify-between"
+      >
+        <h1 className="text-4xl font-light">Notes</h1>
+        <button
+          onClick={() => setText('')}
+          className="text-cream hover:text-coral transition-colors"
+          aria-label="Clear notes"
+        >
+          Clear
+        </button>
       </motion.div>
 
-
-      {/* Canvas Area */}
-      <motion.div variants={itemVariants} className="flex-1 relative">
-        <div className="w-full h-full bg-dark relative overflow-auto">
-          {/* Active Input Line */}
-          <div className="relative">
-            {/* Hidden text measurement */}
-            <div
-              ref={measureRef}
-              className="invisible inline-block"
+      <div className="px-4 md:px-8 py-4 pt-[80px]">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-col min-h-[calc(100svh-120px)] bg-dark text-cream pb-24 md:pb-8"
+        >
+          {/* Textarea */}
+          <motion.div variants={itemVariants} className="flex-1">
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Start typing..."
+              className="resize-none focus:outline-none focus:ring-0 scrollbar-hide w-full"
+              data-gramm="false"
               style={{
-                color: '#000000',
-                whiteSpace: 'pre-wrap',
                 fontFamily: 'inherit',
-                fontSize: 'inherit',
-                fontWeight: 'inherit',
-                lineHeight: 'inherit',
+                backgroundColor: 'white',
+                color: 'black',
+                borderRadius: '0px',
+                height: 'calc(100svh - 130px)',
               }}
             />
-
-            {/* Editable Input */}
-            <div
-              ref={canvasRef}
-              contentEditable
-              suppressContentEditableWarning
-              onInput={(e) => {
-                const text = e.currentTarget.innerText
-                handleInput(text)
-              }}
-              className="outline-none leading-relaxed min-h-6 break-words"
-              style={{
-                color: '#000000',
-                caretColor: 'transparent',
-                userSelect: 'text',
-                WebkitUserSelect: 'text',
-                cursor: 'text',
-              }}
-            />
-
-            {/* Custom Black Cursor */}
-            <div
-              ref={cursorRef}
-              className="absolute top-0 w-0.5 h-6 bg-black pointer-events-none"
-              style={{
-                animation: 'blink 1s infinite',
-                left: `${cursorLeft}px`,
-              }}
-            />
-          </div>
-        </div>
-
-        <style jsx>{`
-          @keyframes blink {
-            0%, 49% {
-              opacity: 1;
-            }
-            50%, 100% {
-              opacity: 0;
-            }
-          }
-        `}</style>
-      </motion.div>
-
-    </motion.div>
+          </motion.div>
+        </motion.div>
+      </div>
+    </div>
   )
 }

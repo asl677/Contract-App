@@ -100,6 +100,11 @@ function HomeContent() {
 
   useEffect(() => {
     setShowCreateContract(false)
+    // Scroll to top when page changes
+    const main = document.querySelector('main')
+    if (main) {
+      main.scrollTop = 0
+    }
   }, [currentPage])
 
   useEffect(() => {
@@ -207,7 +212,7 @@ function HomeContent() {
             if (p === 'contracts') setShowCreateContract(true)
             else setCurrentPage(p as PageType)
           }} contracts={contracts} entries={entries} onDeleteContract={handleDeleteContract} onTrackTime={handleTrackTime} />}
-          {currentPage === 'jobs' && <Jobs />}
+          {currentPage === 'jobs' && <Jobs currentPage={currentPage} onNavigate={setCurrentPage} />}
           {currentPage === 'time' && <TimeTracking contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} entries={entries} />}
           {currentPage === 'notes' && <Notes />}
           {currentPage === 'settings' && <Settings />}

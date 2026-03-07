@@ -2,9 +2,14 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { MagnifyingGlassIcon, ReloadIcon } from '@radix-ui/react-icons'
-import { useToast } from '@/components/Toast'
+import { MagnifyingGlassIcon, ReloadIcon, HamburgerMenuIcon } from '@radix-ui/react-icons'
 import FilterPanel from '@/components/FilterPanel'
+import NavPanel from '@/components/NavPanel'
+
+interface JobsProps {
+  currentPage: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes'
+  onNavigate: (page: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes') => void
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -73,8 +78,7 @@ const getEmploymentType = (duration: string): string => {
   return 'Fractional' // Default to Fractional for ambiguous cases
 }
 
-export default function Jobs() {
-  const { addToast } = useToast()
+export default function Jobs({ currentPage, onNavigate }: JobsProps) {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('All')
   const [locationFilter, setLocationFilter] = useState('All')
@@ -83,14 +87,13 @@ export default function Jobs() {
   const [salaryFilter, setSalaryFilter] = useState('All')
   const [displayedJobs, setDisplayedJobs] = useState<Job[]>([])
   const [showFilters, setShowFilters] = useState(false)
+  const [showNav, setShowNav] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [offset, setOffset] = useState(0)
   const [hasMore, setHasMore] = useState(true)
-  const [endOfListShown, setEndOfListShown] = useState(false)
   const [isMd, setIsMd] = useState(false)
-  const mainRef = useRef<HTMLDivElement>(null)
   const initialFetchDone = useRef(false)
 
   useEffect(() => {
@@ -119,21 +122,9 @@ export default function Jobs() {
     }
 
     try {
-      const response = await fetch(`/api/jobs?offset=${newOffset}&limit=25`)
+      const limit = newOffset === 0 ? 10 : 10
+      const response = await fetch(`/api/jobs?offset=${newOffset}&limit=${limit}`)
       const data: JobsResponse = await response.json()
-
-      // DEBUG: Log API response
-      console.log(`[API Response] Offset=${newOffset}, Returned ${data.jobs.length} jobs, Total=${data.total}, HasMore=${data.hasMore}`)
-      const jobsByBoard = data.jobs.reduce((acc, job) => {
-        acc[job.board] = (acc[job.board] || 0) + 1
-        return acc
-      }, {} as Record<string, number>)
-      console.log('[Jobs by board]:', jobsByBoard)
-      const ycJobs = data.jobs.filter(j => j.board === 'Y Combinator')
-      console.log(`[YC Jobs] Found ${ycJobs.length} YC jobs in this batch`)
-      if (ycJobs.length > 0) {
-        console.log('[Sample YC job]:', ycJobs[0].title, 'at', ycJobs[0].company)
-      }
 
       if (newOffset === 0) {
         setDisplayedJobs(data.jobs)
@@ -146,7 +137,7 @@ export default function Jobs() {
         })
       }
 
-      setOffset(newOffset + 25)
+      setOffset(newOffset + limit)
       setHasMore(data.hasMore)
       setLastUpdated(new Date())
     } catch (error) {
@@ -160,18 +151,6 @@ export default function Jobs() {
     }
   }, [])
 
-  const getRelativeTime = (date: Date) => {
-    const now = new Date()
-    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-    if (seconds < 60) return 'just now'
-    const minutes = Math.floor(seconds / 60)
-    if (minutes < 60) return `${minutes}m ago`
-    const hours = Math.floor(minutes / 60)
-    if (hours < 24) return `${hours}h ago`
-    const days = Math.floor(hours / 24)
-    return `${days}d ago`
-  }
 
   useEffect(() => {
     if (!initialFetchDone.current) {
@@ -181,13 +160,6 @@ export default function Jobs() {
     }
   }, [])
 
-  // Ensure scroll container is properly initialized
-  useEffect(() => {
-    if (displayedJobs.length > 0 && mainRef.current) {
-      // Force layout recalculation to ensure scrollability
-      mainRef.current.scrollTop = 0
-    }
-  }, [displayedJobs.length])
 
 useEffect(() => {
     const interval = setInterval(() => {
@@ -196,36 +168,7 @@ useEffect(() => {
     return () => clearInterval(interval)
   }, [lastUpdated])
 
-  useEffect(() => {
-    const main = mainRef.current
-    if (!main) return
 
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = main
-      // Load more when user is 80% down the page
-      if (scrollHeight - scrollTop - clientHeight < 500 && hasMore && !isLoadingMore) {
-        fetchJobs(offset)
-      }
-    }
-
-    // Delay scroll listener attachment to prevent triggering on initial load
-    const timeoutId = setTimeout(() => {
-      main.addEventListener('scroll', handleScroll)
-    }, 100)
-
-    return () => {
-      clearTimeout(timeoutId)
-      main.removeEventListener('scroll', handleScroll)
-    }
-  }, [offset, hasMore, isLoadingMore, fetchJobs])
-
-  // Show "End of List" toast when reaching the end
-  useEffect(() => {
-    if (!hasMore && displayedJobs.length > 0 && !endOfListShown) {
-      addToast('End of List', 'success')
-      setEndOfListShown(true)
-    }
-  }, [hasMore, displayedJobs.length, endOfListShown, addToast])
 
   const filtered = useMemo(() => displayedJobs.filter(job => {
     const matchSearch = job.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -239,7 +182,7 @@ useEffect(() => {
   }), [displayedJobs, search, typeFilter, locationFilter, sourceFilter, employmentFilter, salaryFilter])
 
   return (
-    <div className="w-full" style={{ marginRight: isMd && showFilters ? 384 : 0, transition: 'margin-right 0.3s ease-in-out' }}>
+    <div className="w-full overflow-x-hidden" style={{ marginRight: isMd && showFilters ? 384 : 0, transition: 'margin-right 0.3s ease-in-out' }}>
       <motion.div
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-[22px] flex items-center justify-between"
         variants={itemVariants}
@@ -249,11 +192,6 @@ useEffect(() => {
         <h1 className="text-4xl font-light">Jobs</h1>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            {lastUpdated && (
-              <p className="text-cream/50 font-mono text-xs uppercase">
-                {getRelativeTime(lastUpdated)}
-              </p>
-            )}
             <button
               onClick={() => fetchJobs(0)}
               className="text-cream hover:text-coral transition-colors"
@@ -270,6 +208,13 @@ useEffect(() => {
           >
             <MagnifyingGlassIcon width={22} height={22} />
           </button>
+          <button
+            onClick={() => setShowNav(!showNav)}
+            className="text-cream hover:text-coral transition-colors md:hidden"
+            aria-label="Toggle navigation"
+          >
+            <HamburgerMenuIcon width={22} height={22} />
+          </button>
         </div>
       </motion.div>
 
@@ -277,6 +222,12 @@ useEffect(() => {
         <div className="flex items-center justify-center min-h-[100dvh]">
           <p className="text-cream/50 font-mono text-sm pulse-text">Grabbin' jobs</p>
         </div>
+      ) : displayedJobs.length === 0 ? (
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">
+          <motion.div variants={itemVariants}>
+            <p className="text-cream font-mono font-medium">No jobs found</p>
+          </motion.div>
+        </motion.div>
       ) : (
         <>
           <FilterPanel
@@ -301,13 +252,15 @@ useEffect(() => {
             salaries={salaries}
           />
 
-          <motion.div
-            ref={mainRef}
-            className="px-4 md:px-8 py-4 pb-0 overflow-y-auto pt-[80px] min-h-screen"
-            style={{ scrollBehavior: 'smooth', marginRight: isMd && showFilters ? 384 : 0, transition: 'margin-right 0.3s ease-in-out' }}
-          >
+          <NavPanel
+            isOpen={showNav}
+            onClose={() => setShowNav(false)}
+            currentPage={currentPage}
+            onNavigate={onNavigate}
+          />
 
-          <motion.div
+          <div className="px-4 md:px-8 pt-[100px] pb-8">
+            <motion.div
             key={`${typeFilter}-${locationFilter}-${search}-${sourceFilter}-${employmentFilter}-${salaryFilter}`}
             variants={containerVariants}
             initial="hidden"
@@ -363,6 +316,23 @@ useEffect(() => {
           </div>
         )}
 
+        {hasMore && displayedJobs.length > 0 && filtered.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="flex justify-center py-8"
+          >
+            <button
+              onClick={() => fetchJobs(offset)}
+              disabled={isLoadingMore}
+              className="px-6 py-3 border border-cream/30 text-cream hover:border-cream/60 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoadingMore ? 'Loading...' : 'Load More'}
+            </button>
+          </motion.div>
+        )}
+
         {!hasMore && displayedJobs.length > 0 && filtered.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -373,7 +343,7 @@ useEffect(() => {
             <div className="text-cream/50 font-mono text-sm">No mo jobs</div>
           </motion.div>
         )}
-          </motion.div>
+          </div>
         </>
       )}
     </div>

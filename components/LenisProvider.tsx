@@ -1,7 +1,6 @@
 'use client'
 
 export default function LenisProvider() {
-  // CSS scroll-behavior: smooth is applied globally in globals.css
-  // This component is kept for compatibility but CSS handles smooth scrolling
+  // Lenis disabled - CSS scroll-behavior: smooth in globals.css handles smooth scrolling
   return null
 }

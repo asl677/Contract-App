@@ -3,7 +3,7 @@ import './globals.css'
 import LenisProvider from '@/components/LenisProvider'
 
 export const metadata: Metadata = {
-  title: 'Free - A simple freelance job board',
+  title: 'Free - Work from anywhere jobs',
   description: 'Discover freelance jobs, track your contracts, and manage your time all in one place',
   applicationName: 'Free',
   appleWebApp: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://be-free.vercel.app',
     siteName: 'Free',
-    title: 'Free - A simple freelance job board',
+    title: 'Free - Work from anywhere jobs',
     description: 'Discover freelance jobs, track your contracts, and manage your time all in one place',
     images: [
       {
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Free - A simple freelance job board',
+    title: 'Free - Work from anywhere jobs',
     description: 'Discover freelance jobs, track your contracts, and manage your time',
     images: ['https://be-free.vercel.app/og-image.png'],
   },
