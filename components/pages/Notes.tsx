@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { HamburgerMenuIcon } from '@radix-ui/react-icons'
+import NavPanel from '@/components/NavPanel'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,8 +25,14 @@ const itemVariants = {
   },
 }
 
-export default function Notes() {
+interface NotesProps {
+  currentPage: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes'
+  onNavigate?: (page: any) => void
+}
+
+export default function Notes({ currentPage, onNavigate }: NotesProps) {
   const [text, setText] = useState('')
+  const [showNav, setShowNav] = useState(false)
 
   const convertHyphensToBullets = (str: string) => {
     return str.replace(/- /g, '• ')
@@ -58,14 +66,30 @@ export default function Notes() {
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-[22px] flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Notes</h1>
-        <button
-          onClick={() => setText('')}
-          className="text-cream hover:text-coral transition-colors"
-          aria-label="Clear notes"
-        >
-          Clear
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setText('')}
+            className="text-cream hover:text-coral transition-colors"
+            aria-label="Clear notes"
+          >
+            Clear
+          </button>
+          <button
+            onClick={() => setShowNav(!showNav)}
+            className="text-cream hover:text-coral transition-colors md:hidden"
+            aria-label="Toggle navigation"
+          >
+            <HamburgerMenuIcon width={22} height={22} />
+          </button>
+        </div>
       </motion.div>
+
+      <NavPanel
+        isOpen={showNav}
+        onClose={() => setShowNav(false)}
+        currentPage={currentPage}
+        onNavigate={onNavigate || (() => {})}
+      />
 
       <div className="px-4 md:px-8 py-4 pt-[80px]">
         <motion.div

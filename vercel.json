@@ -2,11 +2,5 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "env": {
-    "VITE_API_URL": "@api_url"
-  },
-  "previews": {
-    "enabled": true
-  }
+  "framework": "nextjs"
 }

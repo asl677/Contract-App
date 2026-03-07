@@ -1,9 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CheckIcon, ClockIcon } from '@radix-ui/react-icons'
+import { CheckIcon, ClockIcon, HamburgerMenuIcon } from '@radix-ui/react-icons'
 import { useState } from 'react'
 import ContractDetailPanel from '@/components/ContractDetailPanel'
+import NavPanel from '@/components/NavPanel'
 import { useToast } from '@/components/Toast'
 
 const containerVariants = {
@@ -27,6 +28,7 @@ const itemVariants = {
 }
 
 interface ContractsProps {
+  currentPage: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes'
   onNavigate: (page: any) => void
   contracts?: any[]
   entries?: any[]
@@ -34,9 +36,10 @@ interface ContractsProps {
   onTrackTime?: (contractId: number) => void
 }
 
-export default function Contracts({ onNavigate, contracts = [], entries = [], onDeleteContract, onTrackTime }: ContractsProps) {
+export default function Contracts({ currentPage, onNavigate, contracts = [], entries = [], onDeleteContract, onTrackTime }: ContractsProps) {
   const { addToast } = useToast()
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null)
+  const [showNav, setShowNav] = useState(false)
   const selectedContract = contracts.find(c => c.id === selectedContractId)
 
   return (
@@ -56,16 +59,32 @@ export default function Contracts({ onNavigate, contracts = [], entries = [], on
       />
     <div className="w-full" style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}>
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
         style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}
       >
         <h1 className="text-4xl font-light">Contracts</h1>
-        {contracts.length > 0 && (
-          <button onClick={() => onNavigate('contracts')} className="bg-coral text-dark px-6 py-3 font-mono text-sm flex items-center gap-2 hover:bg-coral/90">
-            + New
+        <div className="flex items-center gap-4">
+          {contracts.length > 0 && (
+            <button onClick={() => onNavigate('contracts')} className="bg-coral text-dark px-6 py-3 font-mono text-sm flex items-center gap-2 hover:bg-coral/90">
+              + New
+            </button>
+          )}
+          <button
+            onClick={() => setShowNav(!showNav)}
+            className="text-cream hover:text-coral transition-colors md:hidden"
+            aria-label="Toggle navigation"
+          >
+            <HamburgerMenuIcon width={22} height={22} />
           </button>
-        )}
+        </div>
       </motion.div>
+
+      <NavPanel
+        isOpen={showNav}
+        onClose={() => setShowNav(false)}
+        currentPage={currentPage}
+        onNavigate={onNavigate}
+      />
 
       <div className="px-4 md:px-8 pt-24" style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}>
 

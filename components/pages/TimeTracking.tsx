@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { PlayIcon, StopIcon } from '@radix-ui/react-icons'
+import { PlayIcon, StopIcon, HamburgerMenuIcon } from '@radix-ui/react-icons'
+import NavPanel from '@/components/NavPanel'
 
 const selectStyle = `
   select {
@@ -36,6 +37,8 @@ const itemVariants = {
 }
 
 interface TimeTrackingProps {
+  currentPage: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes'
+  onNavigate?: (page: any) => void
   contracts?: any[]
   selectedContractId?: number | null
   onSelectContract?: (id: number | null) => void
@@ -47,9 +50,10 @@ interface TimeTrackingProps {
   entries?: any[]
 }
 
-export default function TimeTracking({ contracts = [], selectedContractId = null, onSelectContract, isRunning = false, time = 0, onStart, onStop, onSaveEntry, entries = [] }: TimeTrackingProps) {
+export default function TimeTracking({ currentPage, onNavigate, contracts = [], selectedContractId = null, onSelectContract, isRunning = false, time = 0, onStart, onStop, onSaveEntry, entries = [] }: TimeTrackingProps) {
   const timeRef = useRef(0)
   const [showClearConfirm, setShowClearConfirm] = useState(false)
+  const [showNav, setShowNav] = useState(false)
 
   const handleClear = () => {
     localStorage.removeItem('timeEntries')
@@ -71,10 +75,24 @@ export default function TimeTracking({ contracts = [], selectedContractId = null
     <div className="w-full">
       <style>{selectStyle}</style>
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Track</h1>
+        <button
+          onClick={() => setShowNav(!showNav)}
+          className="text-cream hover:text-coral transition-colors md:hidden"
+          aria-label="Toggle navigation"
+        >
+          <HamburgerMenuIcon width={22} height={22} />
+        </button>
       </motion.div>
+
+      <NavPanel
+        isOpen={showNav}
+        onClose={() => setShowNav(false)}
+        currentPage={currentPage}
+        onNavigate={onNavigate || (() => {})}
+      />
 
       <div className="px-4 md:px-8 py-4 pt-24">
       {showClearConfirm && (

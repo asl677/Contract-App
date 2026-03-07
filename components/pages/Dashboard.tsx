@@ -1,8 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { HamburgerMenuIcon } from '@radix-ui/react-icons'
+import NavPanel from '@/components/NavPanel'
 
 interface DashboardProps {
+  currentPage: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes'
   onNavigate: (page: any) => void
   contracts?: any[]
   entries?: any[]
@@ -28,12 +32,33 @@ const itemVariants = {
   },
 }
 
-export default function Dashboard({ onNavigate, contracts = [], entries = [] }: DashboardProps) {
+export default function Dashboard({ currentPage, onNavigate, contracts = [], entries = [] }: DashboardProps) {
+  const [showNav, setShowNav] = useState(false)
+
   // Calculate total earnings all time
   const totalEarningsAllTime = entries.reduce((sum, entry) => {
     const amount = parseFloat(entry.earnings?.replace('$', '') || '0')
     return sum + amount
   }, 0)
+
+  // Calculate total time tracked
+  const totalSeconds = entries.reduce((sum, entry) => {
+    const duration = entry.duration || '0h 0m 0s'
+    const hoursMatch = duration.match(/(\d+)h/)
+    const minutesMatch = duration.match(/(\d+)m/)
+    const secondsMatch = duration.match(/(\d+)s/)
+    const hours = parseInt(hoursMatch?.[1] || '0')
+    const minutes = parseInt(minutesMatch?.[1] || '0')
+    const seconds = parseInt(secondsMatch?.[1] || '0')
+    return sum + (hours * 3600) + (minutes * 60) + seconds
+  }, 0)
+
+  const formatTotalTime = (totalSecs: number) => {
+    const hours = Math.floor(totalSecs / 3600)
+    const minutes = Math.floor((totalSecs % 3600) / 60)
+    const secs = totalSecs % 60
+    return `${hours}h ${minutes}m ${secs}s`
+  }
 
   const today = new Date()
   const dateString = today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
@@ -41,10 +66,24 @@ export default function Dashboard({ onNavigate, contracts = [], entries = [] }: 
   return (
     <div className="w-full">
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Work</h1>
+        <button
+          onClick={() => setShowNav(!showNav)}
+          className="text-cream hover:text-coral transition-colors md:hidden"
+          aria-label="Toggle navigation"
+        >
+          <HamburgerMenuIcon width={22} height={22} />
+        </button>
       </motion.div>
+
+      <NavPanel
+        isOpen={showNav}
+        onClose={() => setShowNav(false)}
+        currentPage={currentPage}
+        onNavigate={onNavigate}
+      />
       <motion.p variants={itemVariants} initial="hidden" animate="visible"
         className="fixed top-20 left-0 right-0 md:left-20 bg-dark px-4 md:px-8 text-cream/60 font-mono text-sm mb-8 pt-0 z-39"
       >
@@ -62,7 +101,7 @@ export default function Dashboard({ onNavigate, contracts = [], entries = [] }: 
           {contracts.length > 0 && (
             <div className="mb-12">
               <motion.h2 variants={itemVariants} className="text-2xl font-light mb-6">
-                Active Contracts
+                <span className="text-cream/60">{contracts.length}</span> Active Contracts
               </motion.h2>
               {contracts.map((contract) => (
                 <motion.div
@@ -97,7 +136,7 @@ export default function Dashboard({ onNavigate, contracts = [], entries = [] }: 
           {entries.length > 0 && (
             <div>
               <motion.h2 variants={itemVariants} className="text-2xl font-light mb-6">
-                Hours Tracked
+                <span className="text-cream/60">{formatTotalTime(totalSeconds)}</span>
               </motion.h2>
               {entries.slice(0, 5).map((entry) => (
                 <motion.div
@@ -129,7 +168,7 @@ export default function Dashboard({ onNavigate, contracts = [], entries = [] }: 
                 <motion.button
                   variants={itemVariants}
                   onClick={() => onNavigate('time')}
-                  className="mt-4 px-4 py-2 text-coral hover:text-coral/80 font-mono text-sm transition-colors"
+                  className="mt-4 text-coral hover:text-coral/80 font-mono text-sm transition-colors"
                 >
                   View all entries →
                 </motion.button>

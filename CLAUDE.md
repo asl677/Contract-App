@@ -82,6 +82,46 @@ style={{ marginRight: isMd && showFilters ? 384 : 0, transition: 'margin-right 0
 - Full-time: Only "full-time" label
 - Fractional: Part-time, contract, temp, intern, vendor, short-term, 6-month, 3-month
 
+### Navigation Panel Pattern (Mobile-First - 2026-03-07)
+
+**NavPanel Component** (`components/NavPanel.tsx`):
+
+**Panel Animation**:
+```jsx
+// Panel slides down from TOP on mobile (not left/right)
+initial={{ y: '-110%' }}
+animate={{ y: 0 }}
+exit={{ y: '-110%' }}
+transition={{ duration: 0.3, ease: 'easeInOut' }}
+
+// On mobile: full-width horizontal panel at top
+// On desktop: 384px vertical panel on left
+className="fixed left-0 right-0 top-0 w-full bg-white md:inset-y-0 md:w-80 md:left-0 md:right-auto md:bg-dark z-50 border-b md:border-b-0 md:border-r"
+```
+
+**Nav Items Animation**:
+```jsx
+// Items stagger DOWN from top (using y-axis, not x)
+navItems.map(({ id, label, Icon }, idx) => (
+  <motion.button
+    initial={{ opacity: 0, y: -10 }}    // Enter from above
+    animate={{ opacity: 1, y: 0 }}      // Drop down
+    transition={{ duration: 0.3, delay: idx * 0.05 }}  // Stagger by index
+  >
+    ...
+  </motion.button>
+))
+```
+
+**Key Rules**:
+- ✅ Panel slides DOWN from top (y: '-110%' → 0)
+- ✅ Nav items stagger DOWN (y: -10 → 0)
+- ✅ Stagger delay: `idx * 0.05` (50ms between items)
+- ✅ NO left/right (x-axis) animations
+- ✅ Mobile: full-width top panel
+- ✅ Desktop: 384px left vertical panel
+- ✅ Background: white on mobile, dark on desktop
+
 ### Spacing Rules (LOCKED)
 
 **Safe values**:

@@ -101,10 +101,12 @@ function HomeContent() {
   useEffect(() => {
     setShowCreateContract(false)
     // Scroll to top when page changes
-    const main = document.querySelector('main')
-    if (main) {
-      main.scrollTop = 0
-    }
+    setTimeout(() => {
+      const main = document.querySelector('main')
+      if (main) {
+        main.scrollTop = 0
+      }
+    }, 0)
   }, [currentPage])
 
   useEffect(() => {
@@ -178,7 +180,7 @@ function HomeContent() {
       <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
 
       <div className="flex flex-1 relative overflow-hidden">
-        <main className="flex-1 overflow-y-auto pb-20 md:pb-0 relative md:pl-20">
+        <main className="flex-1 overflow-y-auto pb-8 md:pb-0 relative md:pl-20">
         <AnimatePresence>
           {isTimerRunning && (
             <motion.div
@@ -207,15 +209,15 @@ function HomeContent() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.2 }}
         >
-          {currentPage === 'dashboard' && <Dashboard onNavigate={setCurrentPage} contracts={contracts} entries={entries} />}
-          {currentPage === 'contracts' && <Contracts onNavigate={(p) => {
+          {currentPage === 'dashboard' && <Dashboard currentPage={currentPage} onNavigate={setCurrentPage} contracts={contracts} entries={entries} />}
+          {currentPage === 'contracts' && <Contracts currentPage={currentPage} onNavigate={(p) => {
             if (p === 'contracts') setShowCreateContract(true)
             else setCurrentPage(p as PageType)
           }} contracts={contracts} entries={entries} onDeleteContract={handleDeleteContract} onTrackTime={handleTrackTime} />}
           {currentPage === 'jobs' && <Jobs currentPage={currentPage} onNavigate={setCurrentPage} />}
-          {currentPage === 'time' && <TimeTracking contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} entries={entries} />}
-          {currentPage === 'notes' && <Notes />}
-          {currentPage === 'settings' && <Settings />}
+          {currentPage === 'time' && <TimeTracking currentPage={currentPage} onNavigate={setCurrentPage} contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} entries={entries} />}
+          {currentPage === 'notes' && <Notes currentPage={currentPage} onNavigate={setCurrentPage} />}
+          {currentPage === 'settings' && <Settings currentPage={currentPage} onNavigate={setCurrentPage} />}
         </motion.div>
       </main>
 

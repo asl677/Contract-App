@@ -76,8 +76,8 @@ div::-webkit-scrollbar {
 
 /* Selection */
 ::selection {
-  background-color: var(--coral);
-  color: var(--dark);
+  background-color: var(--border);
+  color: #fff;
 }
 
 /* Buttons & Interactive Elements */

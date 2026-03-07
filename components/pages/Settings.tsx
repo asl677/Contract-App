@@ -2,6 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { HamburgerMenuIcon } from '@radix-ui/react-icons'
+import NavPanel from '@/components/NavPanel'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,7 +25,13 @@ const itemVariants = {
   },
 }
 
-export default function Settings() {
+interface SettingsProps {
+  currentPage: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes'
+  onNavigate?: (page: any) => void
+}
+
+export default function Settings({ currentPage, onNavigate }: SettingsProps) {
+  const [showNav, setShowNav] = useState(false)
   const [enabledSources, setEnabledSources] = useState({
     'Greenhouse': true,
     'Y Combinator': true,
@@ -47,11 +55,25 @@ export default function Settings() {
 
   return (
     <div className="w-full">
-      <motion.h1 variants={itemVariants} initial="hidden" animate="visible"
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8 text-4xl font-light"
+      <motion.div variants={itemVariants} initial="hidden" animate="visible"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
       >
-        Settings
-      </motion.h1>
+        <h1 className="text-4xl font-light">Settings</h1>
+        <button
+          onClick={() => setShowNav(!showNav)}
+          className="text-cream hover:text-coral transition-colors md:hidden"
+          aria-label="Toggle navigation"
+        >
+          <HamburgerMenuIcon width={22} height={22} />
+        </button>
+      </motion.div>
+
+      <NavPanel
+        isOpen={showNav}
+        onClose={() => setShowNav(false)}
+        currentPage={currentPage}
+        onNavigate={onNavigate || (() => {})}
+      />
 
       <div className="px-4 md:px-8 py-4 pt-24">
         <motion.div variants={containerVariants} initial="hidden" animate="visible">
@@ -66,7 +88,7 @@ export default function Settings() {
             className="bg-surface pl-0 pr-0 py-4"
           >
             <p className="text-sm text-cream/70 leading-relaxed">
-              Remote tech jobs are everywhere but nowhere. This app pulls them together so you're not hunting across 10 different boards. Find opportunities from Y Combinator, Greenhouse, and more in one place.
+              Remote tech jobs are everywhere but nowhere. This free (always will be) app removes the noise and pulls them together so you're not hunting across 10 different boards. Find opportunities from Y Combinator, Greenhouse, and more in one place. Be free, work from anywhere.
             </p>
           </motion.div>
 
@@ -114,7 +136,7 @@ export default function Settings() {
               href="https://www.linkedin.com/in/latenights/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cream/70 hover:text-cream transition-colors text-sm"
+              className="font-mono text-sm text-cream/70 hover:text-cream transition-colors"
             >
               Buy Alex a coffee
             </a>

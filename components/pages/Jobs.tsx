@@ -95,6 +95,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
   const [hasMore, setHasMore] = useState(true)
   const [isMd, setIsMd] = useState(false)
   const initialFetchDone = useRef(false)
+  const sentinelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const checkMd = () => setIsMd(window.innerWidth >= 768)
@@ -161,14 +162,29 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
   }, [])
 
 
-useEffect(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
       if (lastUpdated) setLastUpdated(new Date(lastUpdated))
     }, 60000)
     return () => clearInterval(interval)
   }, [lastUpdated])
 
+  // Infinite scroll observer
+  useEffect(() => {
+    if (!sentinelRef.current || isLoadingMore || !hasMore) return
 
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          fetchJobs(offset)
+        }
+      },
+      { rootMargin: '500px' }
+    )
+
+    observer.observe(sentinelRef.current)
+    return () => observer.disconnect()
+  }, [offset, hasMore, isLoadingMore, fetchJobs])
 
   const filtered = useMemo(() => displayedJobs.filter(job => {
     const matchSearch = job.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -184,7 +200,7 @@ useEffect(() => {
   return (
     <div className="w-full overflow-x-hidden" style={{ marginRight: isMd && showFilters ? 384 : 0, transition: 'margin-right 0.3s ease-in-out' }}>
       <motion.div
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-[22px] flex items-center justify-between"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
         variants={itemVariants}
         initial="hidden"
         animate="visible"
@@ -259,7 +275,7 @@ useEffect(() => {
             onNavigate={onNavigate}
           />
 
-          <div className="px-4 md:px-8 pt-[100px] pb-8">
+          <div className="px-4 md:px-8 pt-20 md:pt-[100px] pb-8">
             <motion.div
             key={`${typeFilter}-${locationFilter}-${search}-${sourceFilter}-${employmentFilter}-${salaryFilter}`}
             variants={containerVariants}
@@ -286,14 +302,17 @@ useEffect(() => {
                     <h3 className="text-xl font-light mb-1">{job.title}</h3>
                     <p className="text-cream/60 font-mono text-sm">{job.type} • Remote • {getSalaryRange(job.salary)}</p>
                   </div>
-                  <div className="ml-auto pl-4">
-                    <p className="text-xl md:text-3xl text-mint font-sans font-medium whitespace-nowrap">{job.company}</p>
+                  <div className="ml-auto pl-4 max-w-[140px] md:max-w-none">
+                    <p className="text-xl md:text-3xl text-mint font-sans font-medium">{job.company}</p>
                   </div>
                 </div>
               </motion.a>
               </motion.div>
             ))}
           </motion.div>
+
+        {/* Infinite scroll sentinel */}
+        <div ref={sentinelRef} className="h-4" />
 
         <AnimatePresence mode="wait">
           {isLoadingMore && (
@@ -314,23 +333,6 @@ useEffect(() => {
           <div className="flex justify-center items-center min-h-[60vh] mt-16">
             <div className="text-cream/50 font-mono text-lg text-center">Shit, I found nothin'</div>
           </div>
-        )}
-
-        {hasMore && displayedJobs.length > 0 && filtered.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex justify-center py-8"
-          >
-            <button
-              onClick={() => fetchJobs(offset)}
-              disabled={isLoadingMore}
-              className="px-6 py-3 border border-cream/30 text-cream hover:border-cream/60 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoadingMore ? 'Loading...' : 'Load More'}
-            </button>
-          </motion.div>
         )}
 
         {!hasMore && displayedJobs.length > 0 && filtered.length > 0 && (
