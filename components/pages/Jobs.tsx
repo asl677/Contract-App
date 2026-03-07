@@ -276,6 +276,21 @@ export default function Jobs() {
           </motion.div>
         )}
 
+        {!isLoadingMore && hasMore && displayedJobs.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex justify-center py-8"
+          >
+            <button
+              onClick={() => fetchJobs(offset)}
+              className="px-6 py-3 border border-cream/20 text-cream hover:border-cream/50 hover:bg-surface transition-all font-mono text-sm"
+            >
+              Load More
+            </button>
+          </motion.div>
+        )}
+
         {!hasMore && displayedJobs.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
