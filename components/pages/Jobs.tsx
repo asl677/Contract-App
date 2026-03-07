@@ -213,7 +213,7 @@ export default function Jobs() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed top-24 left-0 right-0 md:left-20 z-30 bg-dark px-4 md:px-8 pb-6 space-y-4"
+            className="fixed top-24 left-0 right-0 md:left-20 z-30 bg-white px-4 md:px-8 py-4 space-y-3"
           >
             <input
               type="text"
