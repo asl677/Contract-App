@@ -247,10 +247,10 @@ export default function Jobs() {
                 <div className="flex items-start justify-between mb-4 gap-4">
                   <div className="flex-1">
                     <h3 className="text-xl font-light mb-1">{job.title}</h3>
-                    <p className="text-cream/60 font-mono text-sm">{job.type} • {job.company} • {job.duration} • {job.location}</p>
+                    <p className="text-cream/60 font-mono text-sm">{job.type} • {job.duration} • {job.location.split(',')[0]}</p>
                   </div>
                   <div className="flex-shrink-0">
-                    <p className="text-xl md:text-3xl text-mint font-sans font-medium text-right whitespace-nowrap">{job.salary}</p>
+                    <p className="text-xl md:text-3xl text-mint font-sans font-medium text-right whitespace-nowrap">{job.company}</p>
                   </div>
                 </div>
               </motion.a>
