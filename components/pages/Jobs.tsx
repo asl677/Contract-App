@@ -294,7 +294,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
                   href={job.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-surface pl-0 pr-0 py-6 border-t border-border transition-colors cursor-pointer hover:bg-surface/80 flex flex-col"
+                  className="bg-surface pl-0 pr-0 py-6 border-t border-border transition-colors cursor-pointer hover:bg-surface/80 flex flex-col w-full"
                   layout
                 >
                 <div className="flex items-start justify-between gap-4">

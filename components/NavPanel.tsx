@@ -85,7 +85,7 @@ export default function NavPanel({
                   }`}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: isSafari ? 0 : idx * 0.05 }}
+                  transition={{ duration: 0.3, delay: isSafari ? 0 : idx * 0.08 }}
                 >
                   <Icon width={20} height={20} />
                   <span className="font-light">{label}</span>
