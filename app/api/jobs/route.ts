@@ -73,33 +73,106 @@ const generateSalary = (title: string, company: string): string => {
 }
 
 async function fetchYCJobs(): Promise<Job[]> {
-  const ycJobs = [
-    { title: 'Senior Full Stack Engineer', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/1' },
-    { title: 'Product Designer', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://jobs.ycombinator.com/2' },
-    { title: 'Backend Engineer (Go)', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/3' },
-    { title: 'DevOps / Infrastructure Engineer', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/4' },
-    { title: 'Frontend Engineer (React)', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/5' },
-    { title: 'Data Scientist', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://jobs.ycombinator.com/6' },
-    { title: 'Machine Learning Engineer', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/7' },
-    { title: 'Mobile Engineer (iOS)', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/8' },
-    { title: 'QA Engineer', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/9' },
-    { title: 'Solutions Architect', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/10' },
-  ]
+  try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 5000)
 
-  const result = ycJobs.map((job, idx) => ({
-    id: Math.random() * 10000,
-    title: job.title,
-    company: job.company,
-    type: getJobType(job.title),
-    salary: generateSalary(job.title, job.company),
-    location: job.location,
-    duration: ['3 months', '6 months', '1 year', 'Full-time', 'Contract'][idx % 5],
-    url: job.url,
-    board: 'Y Combinator'
-  }))
+    // Fetch job story IDs from HackerNews API
+    const response = await fetch('https://hacker-news.firebaseio.com/v0/jobstories.json', {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0' }
+    })
+    clearTimeout(timeout)
 
-  console.log('Fetched Y Combinator jobs:', result.length)
-  return result
+    if (!response.ok) {
+      throw new Error('Failed to fetch from HN')
+    }
+
+    const jobIds: number[] = await response.json()
+    const jobsToFetch = jobIds.slice(0, 30) // Fetch first 30 job IDs to get more results
+
+    // Fetch individual job details in parallel
+    const jobDetails = await Promise.all(
+      jobsToFetch.map(id =>
+        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`, {
+          headers: { 'User-Agent': 'Mozilla/5.0' }
+        })
+          .then(r => r.json())
+          .catch(() => null)
+      )
+    )
+
+    // Filter and map Y Combinator company jobs (look for ycombinator.com URLs or YC company names)
+    const ycJobs = jobDetails
+      .filter((job): job is any =>
+        job !== null &&
+        job.title &&
+        (job.url?.includes('ycombinator.com') || job.title.toLowerCase().includes('yc '))
+      )
+      .slice(0, 30) // Get up to 30 real YC jobs
+      .map((job) => {
+        // Extract company name from URL or title
+        let companyName = 'Y Combinator'
+        const urlMatch = job.url?.match(/ycombinator\.com\/companies\/([^/]+)/)
+        if (urlMatch) {
+          companyName = urlMatch[1].charAt(0).toUpperCase() + urlMatch[1].slice(1).replace(/-/g, ' ')
+        }
+
+        return {
+          title: job.title || 'Job Opening',
+          company: companyName,
+          location: 'Remote',
+          url: job.url || `https://news.ycombinator.com/item?id=${job.id}`
+        }
+      })
+
+    if (ycJobs.length === 0) {
+      throw new Error('No YC jobs found in HN job feed')
+    }
+
+    const result = ycJobs.map((job, idx) => ({
+      id: Math.random() * 10000,
+      title: job.title,
+      company: job.company,
+      type: getJobType(job.title),
+      salary: generateSalary(job.title, job.company),
+      location: job.location,
+      duration: ['3 months', '6 months', '1 year', 'Full-time', 'Contract'][idx % 5],
+      url: job.url,
+      board: 'Y Combinator'
+    }))
+
+    console.log('Fetched Y Combinator jobs from HN:', result.length)
+    return result
+  } catch (error) {
+    console.error('Failed to fetch Y Combinator jobs from HN:', error)
+
+    // Fallback to sample data if API fails
+    const fallbackJobs = [
+      { title: 'Senior Full Stack Engineer at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs' },
+      { title: 'Product Manager at YC Company', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://news.ycombinator.com/jobs' },
+      { title: 'Backend Engineer at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs' },
+      { title: 'Frontend Engineer at YC Company', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs' },
+      { title: 'DevOps Engineer at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs' },
+      { title: 'Data Scientist at YC Company', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://news.ycombinator.com/jobs' },
+      { title: 'Design Lead at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs' },
+      { title: 'Sales Engineer at YC Company', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs' },
+      { title: 'Solutions Architect at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs' },
+      { title: 'ML Engineer at YC Company', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs' },
+    ]
+
+    return fallbackJobs.map((job, idx) => ({
+      id: Math.random() * 10000,
+      title: job.title,
+      company: job.company,
+      type: getJobType(job.title),
+      salary: generateSalary(job.title, job.company),
+      location: job.location,
+      duration: ['3 months', '6 months', '1 year', 'Full-time', 'Contract'][idx % 5],
+      url: job.url,
+      board: 'Y Combinator'
+    }))
+  }
 }
 
 async function fetchJobsFromSource(board: string, slug: string, company: string): Promise<Job[]> {
