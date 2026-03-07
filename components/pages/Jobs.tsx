@@ -66,6 +66,7 @@ export default function Jobs() {
   const [hasMore, setHasMore] = useState(true)
   const [endOfListShown, setEndOfListShown] = useState(false)
   const mainRef = useRef<HTMLDivElement>(null)
+  const initialFetchDone = useRef(false)
 
   const types = ['All', 'Frontend', 'Backend', 'Full Stack', 'Design', 'Product', 'DevOps', 'Data Science', 'Mobile', 'AI/ML', 'Security', 'Cloud']
   const locations = ['All', 'Remote', 'San Francisco, CA', 'New York, NY', 'Austin, TX', 'Seattle, WA', 'Los Angeles, CA', 'Chicago, IL', 'Boston, MA']
@@ -115,7 +116,10 @@ export default function Jobs() {
   }
 
   useEffect(() => {
-    fetchJobs(0)
+    if (!initialFetchDone.current) {
+      initialFetchDone.current = true
+      fetchJobs(0)
+    }
   }, [])
 
   useEffect(() => {
@@ -137,8 +141,15 @@ export default function Jobs() {
       }
     }
 
-    main.addEventListener('scroll', handleScroll)
-    return () => main.removeEventListener('scroll', handleScroll)
+    // Delay scroll listener attachment to prevent triggering on initial load
+    const timeoutId = setTimeout(() => {
+      main.addEventListener('scroll', handleScroll)
+    }, 100)
+
+    return () => {
+      clearTimeout(timeoutId)
+      main.removeEventListener('scroll', handleScroll)
+    }
   }, [offset, hasMore, isLoadingMore, fetchJobs])
 
   // Show "End of List" toast when reaching the end
@@ -202,7 +213,7 @@ export default function Jobs() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="bg-transparent mb-2 pb-10 space-y-4"
+            className="sticky top-0 left-0 right-0 z-30 bg-dark mb-2 pb-6 space-y-4"
           >
             <input
               type="text"
@@ -213,7 +224,7 @@ export default function Jobs() {
               style={{ backgroundColor: 'white', color: 'black', borderRadius: 0, outline: 'none', boxShadow: 'none' }}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-dark mb-2">TYPE</label>
                 <select
