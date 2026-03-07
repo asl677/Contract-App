@@ -6,6 +6,7 @@ import { MagnifyingGlassIcon, ReloadIcon } from '@radix-ui/react-icons'
 import { useToast } from '@/components/Toast'
 
 const containerVariants = {
+  hidden: { opacity: 1 },
   visible: {
     transition: {
       staggerChildren: 0.08,
