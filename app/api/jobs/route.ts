@@ -7,6 +7,16 @@ const companySources = [
   { name: 'Airbnb', board: 'greenhouse', slug: 'airbnb' },
   { name: 'Dropbox', board: 'greenhouse', slug: 'dropbox' },
   { name: 'Asana', board: 'greenhouse', slug: 'asana' },
+  { name: 'Stripe', board: 'greenhouse', slug: 'stripe' },
+  { name: 'Notion', board: 'greenhouse', slug: 'notion' },
+  { name: 'GitLab', board: 'greenhouse', slug: 'gitlab' },
+  { name: 'Vercel', board: 'greenhouse', slug: 'vercel' },
+  { name: 'Linear', board: 'greenhouse', slug: 'linear' },
+  { name: 'Retool', board: 'greenhouse', slug: 'retool' },
+  { name: 'Zapier', board: 'greenhouse', slug: 'zapier' },
+  { name: 'Loom', board: 'greenhouse', slug: 'loom' },
+  { name: 'Intercom', board: 'greenhouse', slug: 'intercom' },
+  { name: 'Datadog', board: 'greenhouse', slug: 'datadog' },
   { name: 'Y Combinator', board: 'yc', slug: 'jobs' },
 ]
 
