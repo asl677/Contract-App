@@ -106,6 +106,14 @@ export default function ContractDetailPanel({
 
         {/* Footer - Actions */}
         <div className="p-6 space-y-2 bg-white border-t border-gray-200">
+          <div className="flex gap-2">
+            <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="flex-1 px-3 py-2 bg-black text-white text-sm text-center hover:opacity-80 transition-colors">
+              Stripe
+            </a>
+            <a href="https://venmo.com" target="_blank" rel="noopener noreferrer" className="flex-1 px-3 py-2 bg-black text-white text-sm text-center hover:opacity-80 transition-colors">
+              Venmo
+            </a>
+          </div>
           <button
             onClick={() => {
               onEmailInvoice?.(contract.id)
