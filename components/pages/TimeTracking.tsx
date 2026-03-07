@@ -71,15 +71,9 @@ export default function TimeTracking({ contracts = [], selectedContractId = null
     <div className="w-full">
       <style>{selectStyle}</style>
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8"
       >
-        <h1 className="text-4xl font-light">Time Tracking</h1>
-        <button
-          onClick={() => setShowClearConfirm(true)}
-          className="text-coral hover:text-coral/80 transition-colors font-mono text-sm"
-        >
-          Clear entries
-        </button>
+        <h1 className="text-4xl font-light">Track</h1>
       </motion.div>
 
       <div className="px-4 md:px-8 py-4 pt-24">
@@ -183,12 +177,16 @@ export default function TimeTracking({ contracts = [], selectedContractId = null
           </div>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="border-t border-cream/10 my-4"></motion.div>
-
         <motion.div variants={itemVariants}
-          className="bg-surface pl-0 pr-0 py-0"
+          className="bg-surface pl-0 pr-0 py-0 flex items-center justify-between"
         >
-          <h2 className="text-left text-xl font-light mb-4">Today's Entries</h2>
+          <h2 className="text-xl font-light">Today's Entries</h2>
+          <button
+            onClick={() => setShowClearConfirm(true)}
+            className="text-coral hover:text-coral/80 transition-colors font-mono text-sm"
+          >
+            Clear
+          </button>
         </motion.div>
 
         {entries.map((entry) => (

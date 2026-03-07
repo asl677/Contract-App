@@ -30,15 +30,15 @@ const itemVariants = {
 }
 
 export default function Dashboard({ onNavigate, totalTimeThisWeek = '0h', contracts = [], entries = [] }: DashboardProps) {
-  // Calculate total earnings this week
-  const totalEarningsThisWeek = entries.reduce((sum, entry) => {
+  // Calculate total earnings all time
+  const totalEarningsAllTime = entries.reduce((sum, entry) => {
     const amount = parseFloat(entry.earnings?.replace('$', '') || '0')
     return sum + amount
   }, 0)
 
   const items = [
     { id: 'contracts', title: 'Active Contracts', value: String(contracts.length), action: 'View Contracts →' },
-    { id: 'time', title: 'Hours Tracked', value: totalTimeThisWeek, action: 'Track Time' },
+    { id: 'time', title: 'Hours Tracked', value: totalTimeThisWeek, action: 'Track' },
   ]
 
   const today = new Date()
@@ -51,8 +51,7 @@ export default function Dashboard({ onNavigate, totalTimeThisWeek = '0h', contra
       >
         <h1 className="text-4xl font-light">Work</h1>
         <div className="mt-8 md:mt-0 mb-4 md:mb-0">
-          <p className="text-3xl text-mint font-sans font-medium">${totalEarningsThisWeek.toFixed(2)}</p>
-          <p className="text-cream/60 font-mono text-xs">This Week</p>
+          <p className="text-3xl text-mint font-sans font-medium">${totalEarningsAllTime.toFixed(2)}</p>
         </div>
       </motion.div>
       <motion.p variants={itemVariants} initial="hidden" animate="visible"

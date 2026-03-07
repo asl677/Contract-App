@@ -38,6 +38,28 @@ vercel deploy --prod  # Manual deployment only
 
 ---
 
+## ⚠️ CRITICAL: Input & Dropdown Styling
+
+**NEVER modify input or dropdown styling without explicit user request.**
+
+**LOCKED RULES**:
+- Inputs: `borderRadius: 0` (NO rounded pills, NO full radius)
+- Dropdowns: White background, black border, NO custom styling unless shown in design
+- Filter containers: NO `overflow-hidden` (prevents dropdown menus from displaying)
+- Search inputs: Same rules as inputs — minimal styling only
+
+**If you see custom dropdown/input styling:**
+1. Check the user's design (screenshot or Figma link)
+2. If no design provided, use: white bg, black border, `borderRadius: 0`
+3. NEVER assume rounded/pill styling without explicit request
+4. NEVER add `overflow-hidden` to containers with dropdowns
+
+**Applied to**: Jobs page filters, all forms, search inputs, dropdowns
+
+**Reference**: This rule exists because adding unsolicited styling changes breaks the app and causes user frustration.
+
+---
+
 ## Component Patterns
 
 ### Jobs Page (components/pages/Jobs.tsx)

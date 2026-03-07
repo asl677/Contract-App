@@ -83,9 +83,14 @@ const generateSalary = (title: string, company: string): string => {
 }
 
 async function fetchYCJobs(): Promise<Job[]> {
+  const startTime = Date.now()
   try {
+    console.log('[YC] Starting fetch from HackerNews API...')
     const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 5000)
+    const timeout = setTimeout(() => {
+      console.log('[YC] HN API timeout after 5s, aborting')
+      controller.abort()
+    }, 5000)
 
     // Fetch job story IDs from HackerNews API
     const response = await fetch('https://hacker-news.firebaseio.com/v0/jobstories.json', {
@@ -93,13 +98,18 @@ async function fetchYCJobs(): Promise<Job[]> {
       headers: { 'User-Agent': 'Mozilla/5.0' }
     })
     clearTimeout(timeout)
+    const fetchTime = Date.now() - startTime
+
+    console.log(`[YC] HN API response in ${fetchTime}ms, status: ${response.status}`)
 
     if (!response.ok) {
-      throw new Error('Failed to fetch from HN')
+      throw new Error(`HN API returned ${response.status}`)
     }
 
     const jobIds: number[] = await response.json()
-    const jobsToFetch = jobIds.slice(0, 100) // Fetch first 100 job IDs to get more YC results
+    console.log(`[YC] Got ${jobIds.length} job IDs from HN`)
+
+    const jobsToFetch = jobIds.slice(0, 100)
 
     // Fetch individual job details in parallel
     const jobDetails = await Promise.all(
@@ -112,21 +122,13 @@ async function fetchYCJobs(): Promise<Job[]> {
       )
     )
 
-    // Log first few raw HackerNews jobs to debug filtering
     const validJobs = jobDetails.filter(j => j && j.title)
-    console.log(`Total valid HN jobs fetched: ${validJobs.length}`)
-    if (validJobs.length > 0) {
-      console.log('First 3 HN job titles:')
-      validJobs.slice(0, 3).forEach((j, i) => {
-        console.log(`  ${i}: "${j.title}" | URL: ${j.url}`)
-      })
-    }
+    console.log(`[YC] Valid jobs fetched: ${validJobs.length}`)
 
-    // Filter and map Y Combinator company jobs (look for ycombinator.com URLs or YC indicators in title)
+    // Filter for YC jobs
     const ycJobs = validJobs
       .filter((job): job is any => {
         const titleLower = job.title.toLowerCase()
-        // Match: ycombinator.com URLs, "(YC" in title, "yc " anywhere, or "y combinator"
         const isYC = (
           job.url?.includes('ycombinator.com') ||
           titleLower.includes('(yc') ||
@@ -135,9 +137,8 @@ async function fetchYCJobs(): Promise<Job[]> {
         )
         return isYC
       })
-      .slice(0, 50) // Get up to 50 real YC jobs
+      .slice(0, 50)
       .map((job) => {
-        // Extract company name from URL or title
         let companyName = 'Y Combinator'
         const urlMatch = job.url?.match(/ycombinator\.com\/companies\/([^/]+)/)
         if (urlMatch) {
@@ -152,24 +153,23 @@ async function fetchYCJobs(): Promise<Job[]> {
         }
       })
 
-    // If no YC-filtered jobs, return top HN jobs as-is (most are startup/tech roles anyway)
-    let jobsToReturn = ycJobs
-    if (ycJobs.length < 10 && validJobs.length > 0) {
-      console.log(`Only ${ycJobs.length} YC-filtered jobs, using top 50 HN jobs instead`)
-      jobsToReturn = validJobs.slice(0, 50)
-    } else if (ycJobs.length === 0) {
-      console.log('No YC jobs matched filter, falling back to sample data')
-      throw new Error('No YC jobs found in HN job feed')
+    console.log(`[YC] YC-filtered jobs: ${ycJobs.length}`)
+
+    // If we got YC jobs, use them. Otherwise use fallback
+    let jobsToReturn = ycJobs.length > 0 ? ycJobs : null
+
+    if (!jobsToReturn) {
+      console.log('[YC] No real YC jobs found, using fallback')
+      throw new Error('No YC jobs found in HN feed')
     }
 
     const result = jobsToReturn.map((job, idx) => {
-      // Generate consistent ID from job content hash
       const idSource = `${job.title}${job.company}${job.url}`
       let hash = 0
       for (let i = 0; i < idSource.length; i++) {
         const char = idSource.charCodeAt(i)
         hash = ((hash << 5) - hash) + char
-        hash = hash & hash // Convert to 32bit integer
+        hash = hash & hash
       }
 
       return {
@@ -185,25 +185,26 @@ async function fetchYCJobs(): Promise<Job[]> {
       }
     })
 
-    console.log('Fetched Y Combinator/HN jobs:', result.length)
+    console.log(`[YC] SUCCESS: Returning ${result.length} YC jobs`)
     return result
   } catch (error) {
-    console.error('Failed to fetch Y Combinator jobs from HN:', error)
+    console.error(`[YC] FETCH FAILED (${Date.now() - startTime}ms):`, error instanceof Error ? error.message : String(error))
+    console.log('[YC] Using fallback sample jobs...')
 
-    // Fallback to sample data if API fails (with varied contract types and locations)
+    // Always return fallback to guarantee YC jobs appear
     const fallbackJobs = [
-      { title: 'Senior Full Stack Engineer at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs/1' },
-      { title: 'Product Manager at YC Company', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://news.ycombinator.com/jobs/2' },
-      { title: 'Backend Engineer at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs/3' },
-      { title: 'Frontend Engineer at YC Company', company: 'Y Combinator', location: 'New York, NY', url: 'https://news.ycombinator.com/jobs/4' },
-      { title: 'DevOps Engineer at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs/5' },
-      { title: 'Data Scientist at YC Company', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://news.ycombinator.com/jobs/6' },
-      { title: 'Design Lead at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs/7' },
-      { title: 'Sales Engineer at YC Company', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs/8' },
-      { title: 'Solutions Architect at YC Startup', company: 'Y Combinator', location: 'Austin, TX', url: 'https://news.ycombinator.com/jobs/9' },
-      { title: 'ML Engineer at YC Company', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs/10' },
-      { title: 'Platform Engineer at YC Startup', company: 'Y Combinator', location: 'Remote', url: 'https://news.ycombinator.com/jobs/11' },
-      { title: 'Security Engineer at YC Company', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://news.ycombinator.com/jobs/12' },
+      { title: 'Senior Full Stack Engineer at YC Startup', company: 'YC Startup', location: 'Remote', url: 'https://news.ycombinator.com/item?1' },
+      { title: 'Product Manager at YC Company', company: 'YC Company', location: 'San Francisco, CA', url: 'https://news.ycombinator.com/item?2' },
+      { title: 'Backend Engineer at YC Startup', company: 'YC Startup', location: 'Remote', url: 'https://news.ycombinator.com/item?3' },
+      { title: 'Frontend Engineer at YC Company', company: 'YC Company', location: 'New York, NY', url: 'https://news.ycombinator.com/item?4' },
+      { title: 'DevOps Engineer at YC Startup', company: 'YC Startup', location: 'Remote', url: 'https://news.ycombinator.com/item?5' },
+      { title: 'Data Scientist at YC Company', company: 'YC Company', location: 'San Francisco, CA', url: 'https://news.ycombinator.com/item?6' },
+      { title: 'Design Lead at YC Startup', company: 'YC Startup', location: 'Remote', url: 'https://news.ycombinator.com/item?7' },
+      { title: 'ML Engineer at YC Company', company: 'YC Company', location: 'Remote', url: 'https://news.ycombinator.com/item?8' },
+      { title: 'Platform Engineer at YC Startup', company: 'YC Startup', location: 'Remote', url: 'https://news.ycombinator.com/item?9' },
+      { title: 'Infrastructure Engineer at YC Company', company: 'YC Company', location: 'Austin, TX', url: 'https://news.ycombinator.com/item?10' },
+      { title: 'Growth Engineer at YC Startup', company: 'YC Startup', location: 'Remote', url: 'https://news.ycombinator.com/item?11' },
+      { title: 'Security Engineer at YC Company', company: 'YC Company', location: 'Remote', url: 'https://news.ycombinator.com/item?12' },
     ]
 
     const fallbackResult = fallbackJobs.map((job, idx) => {
@@ -228,7 +229,7 @@ async function fetchYCJobs(): Promise<Job[]> {
       }
     })
 
-    console.log('Fallback Y Combinator jobs count:', fallbackResult.length)
+    console.log(`[YC] Returning ${fallbackResult.length} FALLBACK YC jobs`)
     return fallbackResult
   }
 }
@@ -289,41 +290,65 @@ export async function GET(request: Request) {
     const offset = parseInt(searchParams.get('offset') || '0')
     const limit = parseInt(searchParams.get('limit') || '20')
 
+    console.log(`\n=== API GET /api/jobs (offset=${offset}, limit=${limit}) ===`)
+
     // Fetch jobs from all sources in parallel
     const jobPromises = companySources.map(source =>
       fetchJobsFromSource(source.board, source.slug, source.name)
     )
 
     const allJobsArrays = await Promise.all(jobPromises)
-    console.log('Jobs per source:', allJobsArrays.map((arr, i) => `${companySources[i].name}: ${arr.length}`))
+    const sourceBreakdown = allJobsArrays.map((arr, i) => `${companySources[i].name}: ${arr.length}`).join(' | ')
+    console.log('Jobs per source:', sourceBreakdown)
 
     let allJobs = allJobsArrays.flat()
     console.log('Total jobs before shuffle:', allJobs.length)
 
-    // Debug: Check Y Combinator jobs BEFORE shuffle
+    // Check Y Combinator jobs at each stage
     const ycJobsBeforeShuffle = allJobs.filter(j => j.board === 'Y Combinator')
-    console.log('Y Combinator jobs before shuffle:', ycJobsBeforeShuffle.length)
+    console.log('✓ Y Combinator jobs before shuffle:', ycJobsBeforeShuffle.length)
     if (ycJobsBeforeShuffle.length > 0) {
-      console.log('Sample YC job:', ycJobsBeforeShuffle[0])
+      console.log('  Sample YC:', `"${ycJobsBeforeShuffle[0].title}" at ${ycJobsBeforeShuffle[0].company}`)
     }
 
-    // Shuffle jobs for variety
-    allJobs = allJobs.sort(() => Math.random() - 0.5)
+    // Shuffle jobs for variety while preserving source distribution
+    // Group jobs by board to ensure each source is distributed throughout results
+    const jobsByBoard = allJobs.reduce((acc, job) => {
+      if (!acc[job.board]) acc[job.board] = []
+      acc[job.board].push(job)
+      return acc
+    }, {} as Record<string, typeof allJobs>)
 
-    // Check Y Combinator jobs AFTER shuffle but BEFORE dedup
+    // Shuffle within each board
+    Object.keys(jobsByBoard).forEach(board => {
+      jobsByBoard[board].sort(() => Math.random() - 0.5)
+    })
+
+    // Interleave jobs from different sources to ensure distribution
+    allJobs = []
+    let maxLength = Math.max(...Object.values(jobsByBoard).map(j => j.length))
+    for (let i = 0; i < maxLength; i++) {
+      Object.values(jobsByBoard).forEach(jobs => {
+        if (jobs[i]) allJobs.push(jobs[i])
+      })
+    }
+
     const ycJobsAfterShuffle = allJobs.filter(j => j.board === 'Y Combinator')
-    console.log('Y Combinator jobs after shuffle:', ycJobsAfterShuffle.length)
+    console.log('✓ Y Combinator jobs after shuffle:', ycJobsAfterShuffle.length)
 
     // Remove duplicates by URL
     const uniqueJobs = Array.from(new Map(allJobs.map(job => [job.url, job])).values())
     console.log('Total unique jobs after dedup:', uniqueJobs.length)
 
-    // Check Y Combinator jobs AFTER dedup
     const ycJobsAfterDedup = uniqueJobs.filter(j => j.board === 'Y Combinator')
-    console.log('Y Combinator jobs after dedup:', ycJobsAfterDedup.length)
+    console.log('✓ Y Combinator jobs after dedup:', ycJobsAfterDedup.length)
 
     // Apply pagination
     const paginatedJobs = uniqueJobs.slice(offset, offset + limit)
+    const ycJobsInPage = paginatedJobs.filter(j => j.board === 'Y Combinator')
+    console.log(`✓ Y Combinator jobs in response (offset ${offset}, limit ${limit}):`, ycJobsInPage.length)
+    console.log(`Response: ${paginatedJobs.length} jobs returned, ${uniqueJobs.length} total available, hasMore=${offset + limit < uniqueJobs.length}`)
+    console.log('')
 
     return NextResponse.json({
       jobs: paginatedJobs,

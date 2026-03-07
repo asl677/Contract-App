@@ -111,7 +111,7 @@ export default function Settings() {
             className="bg-surface pl-0 pr-0 py-4 flex items-center justify-between border-t border-border"
           >
             <a
-              href="https://linkedin.com/in/alexlakas"
+              href="https://www.linkedin.com/in/latenights/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-cream/70 hover:text-cream transition-colors text-sm"

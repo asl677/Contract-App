@@ -93,6 +93,6 @@ input::placeholder {
 
 input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: var(--coral);
-  box-shadow: 0 0 0 2px rgba(217, 112, 77, 0.1);
+  border-color: black;
+  box-shadow: none;
 }

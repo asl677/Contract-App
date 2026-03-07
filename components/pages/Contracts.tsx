@@ -67,7 +67,7 @@ export default function Contracts({ onNavigate, contracts = [], entries = [], on
         )}
       </motion.div>
 
-      <div className="px-4 md:px-8 pt-24" style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}>
+      <div className="md:px-8 pt-24" style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}>
 
       {contracts.length === 0 ? (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">
@@ -86,7 +86,7 @@ export default function Contracts({ onNavigate, contracts = [], entries = [], on
             <motion.div
               key={contract.id}
               variants={itemVariants}
-              className={`bg-surface pl-0 pr-6 py-6 transition-colors cursor-pointer ${idx > 0 ? 'border-t border-border' : ''}`}
+              className={`bg-surface pl-0 pr-0 md:pr-6 py-6 transition-colors cursor-pointer ${idx > 0 ? 'border-t border-border' : ''}`}
               onClick={() => setSelectedContractId(contract.id)}
             >
               <div className="flex items-start justify-between mb-4">
