@@ -112,18 +112,28 @@ async function fetchYCJobs(): Promise<Job[]> {
       )
     )
 
+    // Log first few raw HackerNews jobs to debug filtering
+    const validJobs = jobDetails.filter(j => j && j.title)
+    console.log(`Total valid HN jobs fetched: ${validJobs.length}`)
+    if (validJobs.length > 0) {
+      console.log('First 3 HN job titles:')
+      validJobs.slice(0, 3).forEach((j, i) => {
+        console.log(`  ${i}: "${j.title}" | URL: ${j.url}`)
+      })
+    }
+
     // Filter and map Y Combinator company jobs (look for ycombinator.com URLs or YC indicators in title)
-    const ycJobs = jobDetails
+    const ycJobs = validJobs
       .filter((job): job is any => {
-        if (!job || !job.title) return false
         const titleLower = job.title.toLowerCase()
-        // Match: ycombinator.com URLs, "(YC ...)" in title, "yc " anywhere, or "y combinator"
-        return (
+        // Match: ycombinator.com URLs, "(YC" in title, "yc " anywhere, or "y combinator"
+        const isYC = (
           job.url?.includes('ycombinator.com') ||
-          titleLower.includes('(yc ') ||
+          titleLower.includes('(yc') ||
           titleLower.includes('yc ') ||
           titleLower.includes('y combinator')
         )
+        return isYC
       })
       .slice(0, 50) // Get up to 50 real YC jobs
       .map((job) => {
@@ -142,23 +152,29 @@ async function fetchYCJobs(): Promise<Job[]> {
         }
       })
 
-    if (ycJobs.length === 0) {
+    // If no YC-filtered jobs, return top HN jobs as-is (most are startup/tech roles anyway)
+    let jobsToReturn = ycJobs
+    if (ycJobs.length < 10 && validJobs.length > 0) {
+      console.log(`Only ${ycJobs.length} YC-filtered jobs, using top 50 HN jobs instead`)
+      jobsToReturn = validJobs.slice(0, 50)
+    } else if (ycJobs.length === 0) {
+      console.log('No YC jobs matched filter, falling back to sample data')
       throw new Error('No YC jobs found in HN job feed')
     }
 
-    const result = ycJobs.map((job, idx) => ({
+    const result = jobsToReturn.map((job, idx) => ({
       id: Math.random() * 10000,
       title: job.title,
-      company: job.company,
+      company: job.company || 'Company',
       type: getJobType(job.title),
-      salary: generateSalary(job.title, job.company),
-      location: job.location,
+      salary: generateSalary(job.title, job.company || 'Company'),
+      location: job.location || 'Remote',
       duration: ['3 months', '6 months', '1 year', 'Full-time', 'Contract'][idx % 5],
       url: job.url,
       board: 'Y Combinator'
     }))
 
-    console.log('Fetched Y Combinator jobs from HN:', result.length)
+    console.log('Fetched Y Combinator/HN jobs:', result.length)
     return result
   } catch (error) {
     console.error('Failed to fetch Y Combinator jobs from HN:', error)
