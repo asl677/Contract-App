@@ -215,7 +215,7 @@ export default function Jobs() {
             transition={{ duration: 0.15 }}
             className="fixed top-24 left-0 right-0 md:left-20 z-30 bg-dark px-4 md:px-8 py-4 space-y-3"
           >
-            <div className="hidden md:grid grid-cols-3 gap-2.5 pb-6">
+            <div className="hidden md:grid grid-cols-3 gap-2.5">
               <input
                 type="text"
                 placeholder="Search"
@@ -246,7 +246,7 @@ export default function Jobs() {
               </select>
             </div>
 
-            <div className="md:hidden space-y-2 pb-6">
+            <div className="md:hidden space-y-2">
               <input
                 type="text"
                 placeholder="Search"
