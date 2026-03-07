@@ -70,7 +70,7 @@ export default function Navigation({ currentPage, onNavigate }: NavigationProps)
   return (
     <>
       <div className="fixed bottom-0 md:hidden left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white pointer-events-none z-50" />
-      <nav className="fixed bottom-0 left-0 right-0 md:fixed md:left-auto md:right-auto md:bottom-auto md:top-0 md:w-20 md:h-screen bg-surface flex md:flex-col items-center justify-around md:justify-start gap-0 md:gap-4 px-0 py-[22px] md:px-3 md:py-[22px] z-50">
+      <nav className="fixed bottom-0 left-0 right-0 md:fixed md:left-auto md:right-auto md:bottom-auto md:top-0 md:w-20 md:h-screen bg-surface flex md:flex-col items-center justify-around md:justify-start gap-0 md:gap-4 px-0 py-8 md:px-3 md:py-8 z-50">
         {/* Animated active border - top on mobile, left on desktop */}
         <motion.div
           className="absolute bg-black z-10"
