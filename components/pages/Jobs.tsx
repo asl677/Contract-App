@@ -308,7 +308,8 @@ useEffect(() => {
 
           <motion.div
             ref={mainRef}
-            className="px-4 md:px-8 py-4 pb-12"
+            className="px-4 md:px-8 py-4 pb-12 overflow-y-auto"
+            style={{ scrollBehavior: 'smooth' }}
             animate={{ paddingTop: showSearch ? 224 : 96 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
