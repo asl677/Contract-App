@@ -38,8 +38,8 @@ function HomeContent() {
   const [newContract, setNewContract] = useState({ freelancer: '', client: '', rate: '', startDate: getTodayDate(), endDate: getTodayDate() })
   const [contracts, setContracts] = useState<any[]>([])
   const [entries, setEntries] = useState<any[]>([])
-  const touchStart = useRef(0)
-  const touchEnd = useRef(0)
+  const touchStart = useRef({ x: 0, y: 0 })
+  const touchEnd = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
     const saved = localStorage.getItem('contracts')
@@ -54,11 +54,14 @@ function HomeContent() {
 
   const handleSwipe = () => {
     if (!touchStart.current || !touchEnd.current) return
-    const distance = touchStart.current - touchEnd.current
-    const isLeftSwipe = distance > 50
-    const isRightSwipe = distance < -50
+    const horizontalDistance = touchStart.current.x - touchEnd.current.x
+    const verticalDistance = Math.abs(touchStart.current.y - touchEnd.current.y)
 
-    if (!isLeftSwipe && !isRightSwipe) return
+    // Only register as swipe if horizontal movement is greater than vertical (not a scroll)
+    if (Math.abs(horizontalDistance) <= 50 || verticalDistance > Math.abs(horizontalDistance)) return
+
+    const isLeftSwipe = horizontalDistance > 50
+    const isRightSwipe = horizontalDistance < -50
 
     const currentIndex = pages.indexOf(currentPage)
     if (isLeftSwipe && currentIndex < pages.length - 1) {
@@ -69,11 +72,17 @@ function HomeContent() {
   }
 
   const handleTouchStart = (e: TouchEvent) => {
-    touchStart.current = e.changedTouches[0].clientX
+    touchStart.current = {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY
+    }
   }
 
   const handleTouchEnd = (e: TouchEvent) => {
-    touchEnd.current = e.changedTouches[0].clientX
+    touchEnd.current = {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY
+    }
     handleSwipe()
   }
 
