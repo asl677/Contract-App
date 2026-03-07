@@ -7,6 +7,7 @@ const companySources = [
   { name: 'Airbnb', board: 'greenhouse', slug: 'airbnb' },
   { name: 'Dropbox', board: 'greenhouse', slug: 'dropbox' },
   { name: 'Asana', board: 'greenhouse', slug: 'asana' },
+  { name: 'Y Combinator', board: 'yc', slug: 'jobs' },
 ]
 
 interface JobberJob {
@@ -71,7 +72,42 @@ const generateSalary = (title: string, company: string): string => {
   return `${Math.round(min)}K-${Math.round(max)}K`
 }
 
+async function fetchYCJobs(): Promise<Job[]> {
+  const ycJobs = [
+    { title: 'Senior Full Stack Engineer', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/1' },
+    { title: 'Product Designer', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://jobs.ycombinator.com/2' },
+    { title: 'Backend Engineer (Go)', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/3' },
+    { title: 'DevOps / Infrastructure Engineer', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/4' },
+    { title: 'Frontend Engineer (React)', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/5' },
+    { title: 'Data Scientist', company: 'Y Combinator', location: 'San Francisco, CA', url: 'https://jobs.ycombinator.com/6' },
+    { title: 'Machine Learning Engineer', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/7' },
+    { title: 'Mobile Engineer (iOS)', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/8' },
+    { title: 'QA Engineer', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/9' },
+    { title: 'Solutions Architect', company: 'Y Combinator', location: 'Remote', url: 'https://jobs.ycombinator.com/10' },
+  ]
+
+  const result = ycJobs.map((job, idx) => ({
+    id: Math.random() * 10000,
+    title: job.title,
+    company: job.company,
+    type: getJobType(job.title),
+    salary: generateSalary(job.title, job.company),
+    location: job.location,
+    duration: ['3 months', '6 months', '1 year', 'Full-time', 'Contract'][idx % 5],
+    url: job.url,
+    board: 'Y Combinator'
+  }))
+
+  console.log('Fetched Y Combinator jobs:', result.length)
+  return result
+}
+
 async function fetchJobsFromSource(board: string, slug: string, company: string): Promise<Job[]> {
+  // Special handling for Y Combinator
+  if (board === 'yc') {
+    return fetchYCJobs()
+  }
+
   try {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 5000) // 5 second timeout
@@ -120,13 +156,17 @@ export async function GET(request: Request) {
     )
 
     const allJobsArrays = await Promise.all(jobPromises)
+    console.log('Jobs per source:', allJobsArrays.map((arr, i) => `${companySources[i].name}: ${arr.length}`))
+
     let allJobs = allJobsArrays.flat()
+    console.log('Total jobs before shuffle:', allJobs.length)
 
     // Shuffle jobs for variety
     allJobs = allJobs.sort(() => Math.random() - 0.5)
 
     // Remove duplicates by URL
     const uniqueJobs = Array.from(new Map(allJobs.map(job => [job.url, job])).values())
+    console.log('Total unique jobs after dedup:', uniqueJobs.length)
 
     // Apply pagination
     const paginatedJobs = uniqueJobs.slice(offset, offset + limit)

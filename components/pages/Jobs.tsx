@@ -5,12 +5,10 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { MagnifyingGlassIcon, ReloadIcon } from '@radix-ui/react-icons'
 
 const containerVariants = {
-  hidden: { opacity: 0 },
   visible: {
-    opacity: 1,
     transition: {
       staggerChildren: 0.08,
-      delayChildren: 0.3,
+      delayChildren: 0,
     },
   },
 }

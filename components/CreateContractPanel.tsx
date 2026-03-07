@@ -57,11 +57,11 @@ export default function CreateContractPanel({
         <div className="bg-dark/50 p-4 rounded text-sm text-dark/70 mb-4">
           Payments are handled outside of this app. This contract binding is for legal record-keeping only.
         </div>
-        <div className="flex gap-2">
-          <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="flex-1 px-3 py-2 bg-black text-white text-xs text-center hover:opacity-80 transition-colors">
+        <div className="flex gap-4 text-sm">
+          <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="text-cream hover:text-cream/80 transition-colors">
             Stripe
           </a>
-          <a href="https://venmo.com" target="_blank" rel="noopener noreferrer" className="flex-1 px-3 py-2 bg-black text-white text-xs text-center hover:opacity-80 transition-colors">
+          <a href="https://venmo.com" target="_blank" rel="noopener noreferrer" className="text-cream hover:text-cream/80 transition-colors">
             Venmo
           </a>
         </div>

@@ -2,6 +2,9 @@
 
 import { motion } from 'framer-motion'
 import { CheckIcon, ClockIcon } from '@radix-ui/react-icons'
+import { useState } from 'react'
+import ContractDetailPanel from '@/components/ContractDetailPanel'
+import { useToast } from '@/components/Toast'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,16 +29,35 @@ const itemVariants = {
 interface ContractsProps {
   onNavigate: (page: any) => void
   contracts?: any[]
+  entries?: any[]
   onDeleteContract?: (id: number) => void
   onTrackTime?: (contractId: number) => void
 }
 
-export default function Contracts({ onNavigate, contracts = [], onDeleteContract, onTrackTime }: ContractsProps) {
+export default function Contracts({ onNavigate, contracts = [], entries = [], onDeleteContract, onTrackTime }: ContractsProps) {
+  const { addToast } = useToast()
+  const [selectedContractId, setSelectedContractId] = useState<number | null>(null)
+  const selectedContract = contracts.find(c => c.id === selectedContractId)
 
   return (
-    <div className="w-full">
+    <>
+      <ContractDetailPanel
+        isOpen={!!selectedContractId}
+        contract={selectedContract}
+        entries={entries}
+        onClose={() => setSelectedContractId(null)}
+        onDelete={(id) => {
+          onDeleteContract?.(id)
+          setSelectedContractId(null)
+        }}
+        onDownloadCSV={() => {
+          addToast('CSV downloaded', 'success')
+        }}
+      />
+    <div className="w-full" style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}>
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8 flex items-center justify-between"
+        style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}
       >
         <h1 className="text-4xl font-light">Contracts</h1>
         {contracts.length > 0 && (
@@ -45,7 +67,7 @@ export default function Contracts({ onNavigate, contracts = [], onDeleteContract
         )}
       </motion.div>
 
-      <div className="px-4 md:px-8 pt-24">
+      <div className="px-4 md:px-8 pt-24" style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}>
 
       {contracts.length === 0 ? (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">
@@ -65,6 +87,7 @@ export default function Contracts({ onNavigate, contracts = [], onDeleteContract
               key={contract.id}
               variants={itemVariants}
               className={`bg-surface pl-0 pr-6 py-6 transition-colors cursor-pointer ${idx > 0 ? 'border-t border-border' : ''}`}
+              onClick={() => setSelectedContractId(contract.id)}
             >
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -108,5 +131,6 @@ export default function Contracts({ onNavigate, contracts = [], onDeleteContract
       )}
       </div>
     </div>
+    </>
   )
 }

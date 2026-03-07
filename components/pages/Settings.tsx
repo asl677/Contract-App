@@ -28,12 +28,14 @@ export default function Settings() {
     Lever: true,
     Greenhouse: true,
     Workable: true,
+    'Y Combinator': true,
   })
 
   const jobSources = [
     { name: 'Lever' },
     { name: 'Greenhouse' },
     { name: 'Workable' },
+    { name: 'Y Combinator' },
   ]
 
   const toggleSource = (name: string) => {
@@ -52,19 +54,18 @@ export default function Settings() {
       </motion.h1>
 
       <div className="px-4 md:px-8 py-4 pt-24">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible">
+          <motion.h2 variants={itemVariants}
+            className="text-xl font-light mb-4"
+          >
+            Job Sources
+          </motion.h2>
 
-        <motion.h2 variants={itemVariants} initial="hidden" animate="visible"
-          className="text-xl font-light mb-4"
-        >
-          Job Sources
-        </motion.h2>
-
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-0">
-          {jobSources.map((source, idx) => (
+          {jobSources.map((source) => (
             <motion.div
               key={source.name}
               variants={itemVariants}
-              className={`bg-surface pl-0 pr-0 py-4 flex items-center justify-between border-t border-border ${idx === 0 ? '' : ''}`}
+              className={`bg-surface pl-0 pr-0 py-4 flex items-center justify-between border-t border-border`}
             >
               <span className="font-mono text-sm">{source.name}</span>
               <button
@@ -83,6 +84,26 @@ export default function Settings() {
               </button>
             </motion.div>
           ))}
+
+          <motion.h2 variants={itemVariants}
+            className="text-xl font-light mb-4 mt-12 pt-8 border-t border-border"
+          >
+            Support
+          </motion.h2>
+
+          <motion.div
+            variants={itemVariants}
+            className="bg-surface pl-0 pr-0 py-4 flex items-center justify-between border-t border-border"
+          >
+            <a
+              href="https://linkedin.com/in/alexlakas"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cream/70 hover:text-cream transition-colors text-sm"
+            >
+              Buy Alex a coffee
+            </a>
+          </motion.div>
         </motion.div>
       </div>
     </div>

@@ -182,32 +182,31 @@ export default function TimeTracking({ contracts = [], selectedContractId = null
             </button>
           </div>
         </motion.div>
-      </motion.div>
 
-      <motion.div variants={itemVariants} className="border-t border-cream/10 my-4"></motion.div>
+        <motion.div variants={itemVariants} className="border-t border-cream/10 my-4"></motion.div>
 
-      <motion.div variants={itemVariants}
-        className="bg-surface pl-0 pr-0 py-0"
-      >
-        <h2 className="text-left text-xl font-light mb-4">Today's Entries</h2>
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-3">
-          {entries.map((entry) => (
-            <motion.div
-              key={entry.id}
-              variants={itemVariants}
-              className="flex items-center justify-between bg-dark "
-            >
-              <div>
-                <p className="font-light">{entry.contract}</p>
-                <p className="text-cream/50 font-mono text-xs">{entry.rate}</p>
-              </div>
-              <div className="text-right">
-                <p className="font-mono text-mint">{entry.earnings}</p>
-                <p className="text-cream/50 font-mono text-xs">{entry.duration}</p>
-              </div>
-            </motion.div>
-          ))}
+        <motion.div variants={itemVariants}
+          className="bg-surface pl-0 pr-0 py-0"
+        >
+          <h2 className="text-left text-xl font-light mb-4">Today's Entries</h2>
         </motion.div>
+
+        {entries.map((entry) => (
+          <motion.div
+            key={entry.id}
+            variants={itemVariants}
+            className="flex items-center justify-between bg-dark border-t border-cream/10 py-3"
+          >
+            <div>
+              <p className="font-light">{entry.contract}</p>
+              <p className="text-cream/50 font-mono text-xs">{entry.rate}</p>
+            </div>
+            <div className="text-right">
+              <p className="font-mono text-mint">{entry.earnings}</p>
+              <p className="text-cream/50 font-mono text-xs">{entry.duration}</p>
+            </div>
+          </motion.div>
+        ))}
       </motion.div>
       </div>
     </div>

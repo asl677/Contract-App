@@ -46,6 +46,19 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Hide scrollbars */
+html, body, main, div {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+main::-webkit-scrollbar,
+div::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
 /* Selection */
 ::selection {
   background-color: var(--coral);

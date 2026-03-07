@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrashIcon } from '@radix-ui/react-icons'
+import { TrashIcon, DownloadIcon } from '@radix-ui/react-icons'
 
 interface ContractDetailPanelProps {
   isOpen: boolean
@@ -15,67 +15,95 @@ interface ContractDetailPanelProps {
     endDate: string
     status: string
   }
+  entries?: any[]
   onDelete?: (id: number) => void
   onEmailInvoice?: (id: number) => void
+  onDownloadCSV?: (id: number) => void
 }
 
 export default function ContractDetailPanel({
   isOpen,
   onClose,
   contract,
+  entries = [],
   onDelete,
   onEmailInvoice,
+  onDownloadCSV,
 }: ContractDetailPanelProps) {
   if (!contract) return null
+
+  const handleDownloadCSV = () => {
+    // Filter entries for this contract
+    const contractEntries = entries.filter(entry => entry.contract === contract.client)
+
+    // Create CSV content
+    const headers = ['Date', 'Duration', 'Rate', 'Earnings']
+    const rows = contractEntries.map(entry => [
+      new Date().toISOString().split('T')[0], // Date (using today as placeholder since entries don't have dates)
+      entry.duration,
+      entry.rate,
+      entry.earnings
+    ])
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n')
+
+    // Trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${contract.client.replace(/\s+/g, '_')}_hours.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    // Call callback for toast notification
+    onDownloadCSV?.(contract.id)
+  }
 
   return (
     <>
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isOpen ? 0.5 : 0 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="fixed inset-0 bg-black z-40 pointer-events-none"
-        style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
-        onClick={onClose}
-      />
-      <motion.div
-        initial={{ x: '100%' }}
-        animate={{ x: isOpen ? 0 : '100%' }}
-        exit={{ x: '100%' }}
-        transition={{ duration: 0.3, type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed right-0 top-0 h-screen w-96 bg-white flex flex-col z-50 overflow-hidden"
+        initial={{ width: 0 }}
+        animate={{ width: isOpen ? 384 : 0 }}
+        exit={{ width: 0 }}
+        transition={{ duration: 0.3 }}
+        className="fixed right-0 top-0 bg-white border-l border-black flex flex-col h-screen overflow-hidden"
+        style={{ width: isOpen ? 384 : 0, zIndex: 9999999 }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 bg-white flex-shrink-0">
           <h2 className="text-2xl font-light text-dark">Contract Details</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-            aria-label="Close"
+            className="text-dark/60 hover:text-dark text-2xl transition-colors"
           >
             ×
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Form */}
+        <div className="flex-1 p-6 space-y-4 overflow-y-auto w-96">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-dark mb-2">
               Client
             </label>
             <p className="text-lg text-dark font-light">{contract.client}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-dark mb-2">
               Freelancer
             </label>
             <p className="text-lg text-dark font-light">{contract.freelancer}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-dark mb-2">
               Rate
             </label>
             <p className="text-lg text-dark font-light">{contract.rate}</p>
@@ -83,13 +111,13 @@ export default function ContractDetailPanel({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+              <label className="block text-sm font-medium text-dark mb-2">
                 Start Date
               </label>
               <p className="text-dark font-light">{contract.startDate}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+              <label className="block text-sm font-medium text-dark mb-2">
                 End Date
               </label>
               <p className="text-dark font-light">{contract.endDate}</p>
@@ -97,48 +125,52 @@ export default function ContractDetailPanel({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-dark mb-2">
               Status
             </label>
             <p className="text-dark font-light capitalize">{contract.status}</p>
           </div>
-        </div>
 
-        {/* Footer - Actions */}
-        <div className="p-6 space-y-2 bg-white border-t border-gray-200">
-          <div className="flex gap-2">
-            <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="flex-1 px-3 py-2 bg-black text-white text-sm text-center hover:opacity-80 transition-colors">
+          <div className="flex gap-4 text-sm">
+            <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="text-dark/70 hover:text-dark transition-colors">
               Stripe
             </a>
-            <a href="https://venmo.com" target="_blank" rel="noopener noreferrer" className="flex-1 px-3 py-2 bg-black text-white text-sm text-center hover:opacity-80 transition-colors">
+            <a href="https://venmo.com" target="_blank" rel="noopener noreferrer" className="text-dark/70 hover:text-dark transition-colors">
               Venmo
             </a>
           </div>
-          <button
-            onClick={() => {
-              onEmailInvoice?.(contract.id)
-              onClose()
-            }}
-            className="w-full bg-blue-600 text-white py-3 rounded font-medium hover:bg-blue-700 transition-colors"
-          >
-            Email Invoice
-          </button>
-          <button
-            onClick={() => {
-              onDelete?.(contract.id)
-              onClose()
-            }}
-            className="w-full bg-red-50 text-red-600 py-3 rounded font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
-          >
-            <TrashIcon width={16} height={16} />
-            Delete Contract
-          </button>
-          <button
-            onClick={onClose}
-            className="w-full bg-gray-100 text-gray-700 py-3 rounded font-medium hover:bg-gray-200 transition-colors"
-          >
-            Close
-          </button>
+        </div>
+
+        {/* Footer - Buttons */}
+        <div className="p-6 space-y-2 bg-white sticky bottom-0">
+          <div className="flex flex-col gap-3 text-sm">
+            <button
+              onClick={handleDownloadCSV}
+              className="text-dark hover:text-dark/70 transition-colors flex items-center gap-2 text-left"
+            >
+              <DownloadIcon width={16} height={16} />
+              Download CSV
+            </button>
+            <button
+              onClick={() => {
+                onEmailInvoice?.(contract.id)
+                onClose()
+              }}
+              className="text-dark hover:text-dark/70 transition-colors text-left"
+            >
+              Email Invoice
+            </button>
+            <button
+              onClick={() => {
+                onDelete?.(contract.id)
+                onClose()
+              }}
+              className="text-dark hover:text-dark/70 transition-colors flex items-center gap-2 text-left"
+            >
+              <TrashIcon width={16} height={16} />
+              Delete Contract
+            </button>
+          </div>
         </div>
       </motion.div>
     </>

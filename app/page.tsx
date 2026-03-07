@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { StopIcon } from '@radix-ui/react-icons'
 import Dashboard from '@/components/pages/Dashboard'
 import Contracts from '@/components/pages/Contracts'
 import TimeTracking from '@/components/pages/TimeTracking'
@@ -192,8 +193,15 @@ function HomeContent() {
               exit={{ opacity: 0, y: 50 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="bg-white border border-black px-4 py-3 text-dark text-sm font-medium font-mono uppercase">
+              <div className="bg-white border border-black px-4 py-3 text-dark text-sm font-medium font-mono uppercase flex items-center gap-3">
                 {formatTimerDisplay(timerSeconds)}
+                <button
+                  onClick={handleStopTimer}
+                  className="text-dark hover:text-dark/60 transition-colors ml-2"
+                  aria-label="Stop timer"
+                >
+                  <StopIcon width={18} height={18} />
+                </button>
               </div>
             </motion.div>
           )}
@@ -202,14 +210,13 @@ function HomeContent() {
           key={currentPage}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.2 }}
         >
           {currentPage === 'dashboard' && <Dashboard onNavigate={setCurrentPage} totalTimeThisWeek={totalTime} contracts={contracts} />}
           {currentPage === 'contracts' && <Contracts onNavigate={(p) => {
             if (p === 'contracts') setShowCreateContract(true)
             else setCurrentPage(p as PageType)
-          }} contracts={contracts} onDeleteContract={handleDeleteContract} onTrackTime={handleTrackTime} />}
+          }} contracts={contracts} entries={entries} onDeleteContract={handleDeleteContract} onTrackTime={handleTrackTime} />}
           {currentPage === 'jobs' && <Jobs />}
           {currentPage === 'time' && <TimeTracking contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} entries={entries} />}
           {currentPage === 'settings' && <Settings />}
