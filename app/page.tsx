@@ -21,7 +21,6 @@ function HomeContent() {
   const [currentPage, setCurrentPage] = useState<PageType>('jobs')
   const [showCreateContract, setShowCreateContract] = useState(false)
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null)
-  const [totalTime, setTotalTime] = useState('0h 0m')
   const [isTimerRunning, setIsTimerRunning] = useState(false)
   const [timerSeconds, setTimerSeconds] = useState(0)
   const timerRef = useRef(0)
@@ -87,25 +86,6 @@ function HomeContent() {
     handleSwipe()
   }
 
-  useEffect(() => {
-    const calculateTotalTime = () => {
-      let totalSeconds = 0
-      entries.forEach((entry: any) => {
-        const match = entry.duration.match(/(\d+)h\s*(\d+)m\s*(\d+)s/)
-        if (match) {
-          const h = parseInt(match[1]) || 0
-          const m = parseInt(match[2]) || 0
-          const s = parseInt(match[3]) || 0
-          totalSeconds += h * 3600 + m * 60 + s
-        }
-      })
-      const hours = Math.floor(totalSeconds / 3600)
-      const minutes = Math.floor((totalSeconds % 3600) / 60)
-      const seconds = totalSeconds % 60
-      setTotalTime(`${hours}h ${minutes}m ${seconds}s`)
-    }
-    calculateTotalTime()
-  }, [entries])
 
   useEffect(() => {
     const main = document.querySelector('main')
