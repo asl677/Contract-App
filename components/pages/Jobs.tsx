@@ -310,7 +310,7 @@ export default function Jobs() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex justify-center py-8"
+            className="flex justify-center py-4"
           >
             <div className="text-cream/50 font-mono text-sm">Loading more jobs...</div>
           </motion.div>
@@ -320,7 +320,7 @@ export default function Jobs() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex justify-center py-8"
+            className="flex justify-center py-4"
           >
             <button
               onClick={() => fetchJobs(offset)}
@@ -335,7 +335,7 @@ export default function Jobs() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex justify-center py-8"
+            className="flex justify-center py-4"
           >
             <div className="text-cream/50 font-mono text-sm">No more jobs</div>
           </motion.div>
