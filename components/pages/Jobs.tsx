@@ -206,7 +206,7 @@ export default function Jobs() {
           <motion.p variants={breathingVariants} animate="animate" className="text-cream/50 font-mono text-sm">Grabbin' jobs</motion.p>
         </div>
       ) : (
-        <div ref={mainRef} className={`px-4 md:px-8 py-4 pb-12 overflow-y-auto ${showSearch ? 'pt-72' : 'pt-24'}`}>
+        <div ref={mainRef} className={`px-4 md:px-8 py-4 pb-12 overflow-y-auto ${showSearch ? 'pt-56' : 'pt-24'}`}>
           {showSearch && (
           <motion.div
             initial={{ opacity: 0 }}
