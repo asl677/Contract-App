@@ -327,6 +327,33 @@ style={{ backgroundColor: 'white', color: 'black', borderRadius: 0, outline: 'no
 - Position: Absolute at top of job item
 - **DO NOT delete this divider animation**
 
+### CustomDropdown Component Pattern
+
+**Location**: `/Users/alexlakas/free-app/components/CustomDropdown.tsx`
+
+**Key Design Decision**: NO CARET ICONS
+- Removed SVG arrow/chevron from all dropdowns (2026-03-07)
+- Dropdowns open/close on click without visual caret indicator
+- Applies to ALL selector dropdowns: Filter panel, Create Contract, etc.
+- Reason: Cleaner visual appearance, dropdown state indicated by content change
+
+**Code Pattern**:
+```jsx
+<button
+  onClick={() => setIsOpen(!isOpen)}
+  className="w-full px-4 py-3 bg-white border border-black text-black text-left"
+>
+  <span>{displayFormat(value)}</span>
+  {/* NO SVG CARET - removed 2026-03-07 */}
+</button>
+```
+
+**Applied To**:
+- FilterPanel (Jobs page, all filter dropdowns)
+- CreateContractPanel (contract form dropdowns)
+- Any future selector dropdowns must use CustomDropdown component
+- NEVER add caret icons back to dropdowns
+
 ### Load More Button Pattern
 
 **Location**: Lines 406-420

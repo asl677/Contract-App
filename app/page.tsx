@@ -8,11 +8,12 @@ import Contracts from '@/components/pages/Contracts'
 import TimeTracking from '@/components/pages/TimeTracking'
 import Settings from '@/components/pages/Settings'
 import Jobs from '@/components/pages/Jobs'
+import Notes from '@/components/pages/Notes'
 import Navigation from '@/components/Navigation'
 import CreateContractPanel from '@/components/CreateContractPanel'
 import { ToastProvider, useToast } from '@/components/Toast'
 
-const pages = ['dashboard', 'contracts', 'jobs', 'time', 'settings'] as const
+const pages = ['dashboard', 'contracts', 'jobs', 'time', 'notes', 'settings'] as const
 type PageType = typeof pages[number]
 
 function HomeContent() {
@@ -228,6 +229,7 @@ function HomeContent() {
           }} contracts={contracts} entries={entries} onDeleteContract={handleDeleteContract} onTrackTime={handleTrackTime} />}
           {currentPage === 'jobs' && <Jobs />}
           {currentPage === 'time' && <TimeTracking contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} entries={entries} />}
+          {currentPage === 'notes' && <Notes />}
           {currentPage === 'settings' && <Settings />}
         </motion.div>
       </main>

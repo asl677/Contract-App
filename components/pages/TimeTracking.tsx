@@ -178,33 +178,50 @@ export default function TimeTracking({ contracts = [], selectedContractId = null
         </motion.div>
 
         <motion.div variants={itemVariants}
-          className="bg-surface pl-0 pr-0 py-0 flex items-center justify-between"
+          className="flex items-center justify-between py-6 mb-2"
         >
           <h2 className="text-xl font-light">Today's Entries</h2>
-          <button
-            onClick={() => setShowClearConfirm(true)}
-            className="text-coral hover:text-coral/80 transition-colors font-mono text-sm"
-          >
-            Clear
-          </button>
+          {entries.length > 0 && (
+            <button
+              onClick={() => setShowClearConfirm(true)}
+              className="text-coral hover:text-coral/80 transition-colors font-mono text-sm"
+            >
+              Clear
+            </button>
+          )}
         </motion.div>
 
-        {entries.map((entry) => (
-          <motion.div
-            key={entry.id}
-            variants={itemVariants}
-            className="flex items-center justify-between bg-dark border-t border-cream/10 py-3"
-          >
-            <div>
-              <p className="font-light">{entry.contract}</p>
-              <p className="text-cream/50 font-mono text-xs">{entry.rate}</p>
-            </div>
-            <div className="text-right">
-              <p className="font-mono text-mint">{entry.earnings}</p>
-              <p className="text-cream/50 font-mono text-xs">{entry.duration}</p>
-            </div>
+        {entries.length > 0 ? (
+          entries.map((entry) => (
+            <motion.div
+              key={entry.id}
+              className="relative"
+              variants={itemVariants}
+              layout
+            >
+              <motion.div
+                className="absolute top-0 left-0 right-0 h-px bg-border"
+                variants={itemVariants}
+              />
+              <div
+                className="flex items-start justify-between py-3"
+              >
+                <div className="flex-1">
+                  <p className="font-light text-lg">{entry.contract}</p>
+                  <p className="text-cream/60 font-mono text-xs">{entry.rate}</p>
+                  <p className="text-cream/40 font-mono text-xs mt-1">{entry.duration}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-mint font-sans font-medium text-lg">{entry.earnings}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))
+        ) : (
+          <motion.div variants={itemVariants} className="text-cream/40 py-8 text-center">
+            No entries yet
           </motion.div>
-        ))}
+        )}
       </motion.div>
       </div>
     </div>

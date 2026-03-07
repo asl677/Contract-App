@@ -103,6 +103,8 @@ style={{ marginRight: isMd && showFilters ? 384 : 0, transition: 'margin-right 0
 - Background: white
 - Border: black, 1px
 - No box shadow, no outline
+- **NO CARET ICONS** (removed 2026-03-07) — All dropdown selectors removed SVG arrow icons for cleaner appearance
+- Dropdowns open/close on click without visual caret indicator
 
 ---
 

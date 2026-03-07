@@ -8,11 +8,12 @@ import {
   BookmarkIcon,
   BackpackIcon,
   FileTextIcon,
+  Pencil2Icon,
 } from '@radix-ui/react-icons'
 
 interface NavigationProps {
-  currentPage: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs'
-  onNavigate: (page: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs') => void
+  currentPage: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes'
+  onNavigate: (page: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes') => void
 }
 
 export default function Navigation({ currentPage, onNavigate }: NavigationProps) {
@@ -21,6 +22,7 @@ export default function Navigation({ currentPage, onNavigate }: NavigationProps)
     { id: 'dashboard', label: 'Dashboard', Icon: BookmarkIcon },
     { id: 'contracts', label: 'Contracts', Icon: FileTextIcon },
     { id: 'time', label: 'Time', Icon: TimerIcon },
+    { id: 'notes', label: 'Notes', Icon: Pencil2Icon },
     { id: 'settings', label: 'Settings', Icon: GearIcon },
   ] as const
 
