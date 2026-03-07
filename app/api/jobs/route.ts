@@ -23,6 +23,44 @@ const getJobType = (title: string): string => {
   return 'Full Stack'
 }
 
+const getCareersPageUrl = (company: string): string => {
+  const careersMap: { [key: string]: string } = {
+    'Meta': 'https://www.metacareers.com/jobs',
+    'Stripe': 'https://stripe.com/jobs',
+    'Airbnb': 'https://careers.airbnb.com',
+    'GitLab': 'https://about.gitlab.com/jobs',
+    'Twitter': 'https://twitter.com/en/careers',
+    'Amazon': 'https://www.amazon.jobs',
+    'Twilio': 'https://www.twilio.com/en-us/company/jobs',
+    'Spotify': 'https://www.spotifyjobs.com',
+    'DigitalOcean': 'https://www.digitalocean.com/careers',
+    'Apple': 'https://www.apple.com/jobs',
+    'Microsoft': 'https://careers.microsoft.com',
+    'Shopify': 'https://www.shopify.com/careers',
+    'Adobe': 'https://www.adobe.com/careers.html',
+    'Figma': 'https://www.figma.com/careers',
+    'Google': 'https://careers.google.com',
+    'Vercel': 'https://vercel.com/careers',
+    'Notion': 'https://www.notion.so/careers',
+    'Linear': 'https://linear.app/careers',
+    'Netflix': 'https://jobs.netflix.com',
+    'Cloudflare': 'https://www.cloudflare.com/careers',
+    'Uber': 'https://www.uber.com/en-US/careers',
+    'dbt Labs': 'https://www.getdbt.com/careers',
+    'OpenAI': 'https://openai.com/careers',
+    'Anthropic': 'https://www.anthropic.com/careers',
+    'DeepMind': 'https://careers.google.com/teams/deepmind',
+    'Together AI': 'https://www.together.ai/careers',
+    'Tesla': 'https://www.tesla.com/careers',
+    'GitHub': 'https://github.com/about/careers',
+    'Google Cloud': 'https://careers.google.com',
+    'Discord': 'https://discord.com/jobs',
+    'Slack': 'https://slack.com/careers',
+  }
+
+  return careersMap[company] || `https://www.google.com/search?q=${encodeURIComponent(company + ' careers')}`
+}
+
 // Real job listings with accurate data
 const realJobs = [
   // Frontend
@@ -100,8 +138,8 @@ export async function GET() {
     salary: formatSalary(job.salary),
     location: job.location,
     duration: job.duration,
-    url: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(job.title)}&company=${encodeURIComponent(job.company)}`,
-    board: 'linkedin.com'
+    url: getCareersPageUrl(job.company),
+    board: job.company
   }))
 
   return NextResponse.json(jobs)
