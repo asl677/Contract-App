@@ -57,14 +57,14 @@ export default function NavPanel({
             animate={{ x: 0 }}
             exit={{ x: '-110%' }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="fixed inset-y-0 left-0 w-80 bg-dark z-50 overflow-y-auto border-r border-cream/10"
+            className="fixed inset-y-0 left-0 w-80 bg-white md:bg-dark z-50 overflow-y-auto border-r border-cream/10"
           >
             {/* Header */}
-            <div className="sticky top-0 bg-dark px-6 py-4 flex items-center justify-between border-b border-cream/10">
-              <h2 className="text-lg font-light text-cream">Menu</h2>
+            <div className="sticky top-0 bg-white md:bg-dark px-6 py-4 flex items-center justify-between border-b border-cream/10">
+              <h2 className="text-lg font-light text-dark md:text-cream">Menu</h2>
               <button
                 onClick={onClose}
-                className="text-cream/50 hover:text-cream transition-colors"
+                className="text-dark/50 md:text-cream/50 hover:text-dark md:hover:text-cream transition-colors"
                 aria-label="Close menu"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +82,7 @@ export default function NavPanel({
                   className={`w-full px-6 py-3 flex items-center gap-3 transition-colors ${
                     currentPage === id
                       ? 'bg-coral text-dark'
-                      : 'text-cream hover:bg-cream/10'
+                      : 'text-dark md:text-cream hover:bg-black/5 md:hover:bg-cream/10'
                   }`}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
