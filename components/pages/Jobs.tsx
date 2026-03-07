@@ -215,16 +215,17 @@ export default function Jobs() {
             transition={{ duration: 0.15 }}
             className="fixed top-24 left-0 right-0 md:left-20 z-30 bg-dark px-4 md:px-8 py-4 space-y-3"
           >
-            <input
-              type="text"
-              placeholder="Search jobs..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-4 py-3 border border-black transition-colors focus:outline-none focus:border-black focus:ring-0"
-              style={{ backgroundColor: 'white', color: 'black', borderRadius: 0, outline: 'none', boxShadow: 'none' }}
-            />
-
-            <div className="grid grid-cols-2 gap-2.5 pb-6">
+            <div className="hidden md:grid grid-cols-3 gap-2.5 pb-6">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full px-4 py-3 border border-black transition-colors focus:outline-none focus:border-black focus:ring-0"
+                  style={{ backgroundColor: 'white', color: 'black', borderRadius: 0, outline: 'none', boxShadow: 'none' }}
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-cream mb-2">TYPE</label>
                 <select
@@ -238,7 +239,6 @@ export default function Jobs() {
                   ))}
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-cream mb-2">LOCATION</label>
                 <select
@@ -251,6 +251,45 @@ export default function Jobs() {
                     <option key={l} value={l}>{l}</option>
                   ))}
                 </select>
+              </div>
+            </div>
+
+            <div className="md:hidden space-y-3 pb-6">
+              <input
+                type="text"
+                placeholder="Search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full px-4 py-3 border border-black transition-colors focus:outline-none focus:border-black focus:ring-0"
+                style={{ backgroundColor: 'white', color: 'black', borderRadius: 0, outline: 'none', boxShadow: 'none' }}
+              />
+              <div className="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label className="block text-sm font-medium text-cream mb-2">TYPE</label>
+                  <select
+                    value={typeFilter}
+                    onChange={(e) => setTypeFilter(e.target.value)}
+                    className="w-full px-4 py-3 border border-black transition-colors focus:outline-none focus:border-black focus:ring-0"
+                    style={{ backgroundColor: 'white', color: 'black', borderRadius: 0, outline: 'none', boxShadow: 'none' }}
+                  >
+                    {types.map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-cream mb-2">LOCATION</label>
+                  <select
+                    value={locationFilter}
+                    onChange={(e) => setLocationFilter(e.target.value)}
+                    className="w-full px-4 py-3 border border-black transition-colors focus:outline-none focus:border-black focus:ring-0"
+                    style={{ backgroundColor: 'white', color: 'black', borderRadius: 0, outline: 'none', boxShadow: 'none' }}
+                  >
+                    {locations.map(l => (
+                      <option key={l} value={l}>{l}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </motion.div>
