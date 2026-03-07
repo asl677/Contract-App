@@ -303,7 +303,7 @@ useEffect(() => {
 
           <motion.div
             ref={mainRef}
-            className="px-4 md:px-8 py-4 pb-0 overflow-y-auto pt-24 min-h-screen"
+            className="px-4 md:px-8 py-4 pb-0 overflow-y-auto pt-[80px] min-h-screen"
             style={{ scrollBehavior: 'smooth', marginRight: isMd && showFilters ? 384 : 0, transition: 'margin-right 0.3s ease-in-out' }}
           >
 
