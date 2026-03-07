@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { CheckIcon, ClockIcon, HamburgerMenuIcon } from '@radix-ui/react-icons'
 import { useState } from 'react'
 import ContractDetailPanel from '@/components/ContractDetailPanel'
+import CreateContractPanel from '@/components/CreateContractPanel'
 import NavPanel from '@/components/NavPanel'
 import { useToast } from '@/components/Toast'
 
@@ -23,7 +24,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4 },
+    transition: { duration: 0.6 },
   },
 }
 
@@ -39,8 +40,10 @@ interface ContractsProps {
 export default function Contracts({ currentPage, onNavigate, contracts = [], entries = [], onDeleteContract, onTrackTime }: ContractsProps) {
   const { addToast } = useToast()
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null)
+  const [showCreateForm, setShowCreateForm] = useState(false)
   const [showNav, setShowNav] = useState(false)
   const selectedContract = contracts.find(c => c.id === selectedContractId)
+  const isPanelOpen = !!selectedContractId || showCreateForm
 
   return (
     <>
@@ -57,15 +60,26 @@ export default function Contracts({ currentPage, onNavigate, contracts = [], ent
           addToast('CSV downloaded', 'success')
         }}
       />
-    <div className="w-full" style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}>
+
+      <CreateContractPanel
+        isOpen={showCreateForm}
+        onClose={() => setShowCreateForm(false)}
+        newContract={{ freelancer: '', client: '', rate: '', startDate: '', endDate: '' }}
+        onContractChange={() => {}}
+        onSave={() => {
+          addToast('Contract created', 'success')
+          setShowCreateForm(false)
+        }}
+      />
+    <div className="w-full" style={{ marginRight: isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}>
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
-        style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}
+        style={{ marginRight: isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}
       >
         <h1 className="text-4xl font-light">Contracts</h1>
         <div className="flex items-center gap-4">
           {contracts.length > 0 && (
-            <button onClick={() => onNavigate('contracts')} className="bg-coral text-dark px-6 py-3 font-mono text-sm flex items-center gap-2 hover:bg-coral/90">
+            <button onClick={() => setShowCreateForm(true)} className="bg-coral text-dark px-6 py-3 font-mono text-sm flex items-center gap-2 hover:bg-coral/90">
               + New
             </button>
           )}
@@ -86,7 +100,7 @@ export default function Contracts({ currentPage, onNavigate, contracts = [], ent
         onNavigate={onNavigate}
       />
 
-      <div className="px-4 md:px-8 pt-24" style={{ marginRight: selectedContractId ? 384 : 0, transition: 'margin-right 0.3s' }}>
+      <div className="px-4 md:px-8 pt-24" style={{ marginRight: isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}>
 
       {contracts.length === 0 ? (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">

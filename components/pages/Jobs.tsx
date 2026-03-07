@@ -27,7 +27,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4 },
+    transition: { duration: 0.6 },
   },
 }
 
@@ -294,7 +294,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
                   href={job.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-surface pl-0 pr-0 py-6 border-t border-border transition-colors cursor-pointer hover:bg-surface/80 flex flex-col w-full"
+                  className="bg-surface pl-0 pr-0 py-6 border-t border-border transition-colors cursor-pointer hover:bg-surface/80 flex flex-col"
                   layout
                 >
                 <div className="flex items-start justify-between gap-4">
@@ -337,7 +337,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
 
         {!hasMore && displayedJobs.length > 0 && filtered.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             className="flex justify-center py-4"

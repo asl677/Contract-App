@@ -26,7 +26,7 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 5 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
 }
 ```
