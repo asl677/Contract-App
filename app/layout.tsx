@@ -21,13 +21,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://free-app.vercel.app',
+    url: 'https://freed-app.vercel.app',
     siteName: 'Free',
     title: 'Free - A simple freelance job board',
     description: 'Discover freelance jobs, track your contracts, and manage your time all in one place',
     images: [
       {
-        url: 'https://free-app.vercel.app/og-image.png',
+        url: 'https://freed-app.vercel.app/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Free App',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Free - A simple freelance job board',
     description: 'Discover freelance jobs, track your contracts, and manage your time',
-    images: ['https://free-app.vercel.app/og-image.png'],
+    images: ['https://freed-app.vercel.app/og-image.png'],
   },
 }
 
