@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { MagnifyingGlassIcon, ReloadIcon } from '@radix-ui/react-icons'
 
 const containerVariants = {
@@ -36,6 +36,12 @@ interface Job {
   board: string
 }
 
+interface JobsResponse {
+  jobs: Job[]
+  total: number
+  hasMore: boolean
+}
+
 export default function Jobs() {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('All')
@@ -43,24 +49,43 @@ export default function Jobs() {
   const [displayedJobs, setDisplayedJobs] = useState<Job[]>([])
   const [showSearch, setShowSearch] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [offset, setOffset] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  const mainRef = useRef<HTMLDivElement>(null)
 
   const types = ['All', 'Frontend', 'Backend', 'Full Stack', 'Design', 'Product', 'DevOps', 'Data Science', 'Mobile', 'AI/ML', 'Security', 'Cloud']
   const locations = ['All', 'Remote', 'San Francisco, CA', 'New York, NY', 'Austin, TX', 'Seattle, WA', 'Los Angeles, CA', 'Chicago, IL', 'Boston, MA']
 
-  const fetchJobs = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const response = await fetch('/api/jobs')
-      const jobs = await response.json()
-      const jobsSlice = jobs.slice(0, 50)
+  const fetchJobs = useCallback(async (newOffset: number = 0) => {
+    if (newOffset === 0) {
+      setIsLoading(true)
+    } else {
+      setIsLoadingMore(true)
+    }
 
-      setDisplayedJobs(jobsSlice)
+    try {
+      const response = await fetch(`/api/jobs?offset=${newOffset}&limit=20`)
+      const data: JobsResponse = await response.json()
+
+      if (newOffset === 0) {
+        setDisplayedJobs(data.jobs)
+      } else {
+        setDisplayedJobs(prev => [...prev, ...data.jobs])
+      }
+
+      setOffset(newOffset + 20)
+      setHasMore(data.hasMore)
       setLastUpdated(new Date())
     } catch (error) {
       console.error('Failed to fetch jobs:', error)
     } finally {
-      setIsLoading(false)
+      if (newOffset === 0) {
+        setIsLoading(false)
+      } else {
+        setIsLoadingMore(false)
+      }
     }
   }, [])
 
@@ -78,7 +103,7 @@ export default function Jobs() {
   }
 
   useEffect(() => {
-    fetchJobs()
+    fetchJobs(0)
   }, [fetchJobs])
 
   useEffect(() => {
@@ -87,6 +112,22 @@ export default function Jobs() {
     }, 60000)
     return () => clearInterval(interval)
   }, [lastUpdated])
+
+  useEffect(() => {
+    const main = mainRef.current
+    if (!main) return
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = main
+      // Load more when user is 80% down the page
+      if (scrollHeight - scrollTop - clientHeight < 500 && hasMore && !isLoadingMore) {
+        fetchJobs(offset)
+      }
+    }
+
+    main.addEventListener('scroll', handleScroll)
+    return () => main.removeEventListener('scroll', handleScroll)
+  }, [offset, hasMore, isLoadingMore, fetchJobs])
 
   const filtered = displayedJobs.filter(job => {
     const matchSearch = job.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -110,7 +151,7 @@ export default function Jobs() {
               </p>
             )}
             <button
-              onClick={fetchJobs}
+              onClick={() => fetchJobs(0)}
               className="text-cream hover:text-coral transition-colors"
               aria-label="Refresh jobs"
               disabled={isLoading}
@@ -128,7 +169,7 @@ export default function Jobs() {
         </div>
       </motion.div>
 
-      <div className="px-4 md:px-8 py-4 pt-24">
+      <div ref={mainRef} className="px-4 md:px-8 py-4 pt-24 overflow-y-auto" style={{ height: 'calc(100dvh - 80px)' }}>
         {showSearch && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -208,6 +249,26 @@ export default function Jobs() {
                 </div>
               </motion.a>
             ))}
+          </motion.div>
+        )}
+
+        {isLoadingMore && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex justify-center py-8"
+          >
+            <div className="text-cream/50 font-mono text-sm">Loading more jobs...</div>
+          </motion.div>
+        )}
+
+        {!hasMore && displayedJobs.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex justify-center py-8"
+          >
+            <div className="text-cream/50 font-mono text-sm">No more jobs</div>
           </motion.div>
         )}
       </div>
