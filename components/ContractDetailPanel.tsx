@@ -86,28 +86,29 @@ export default function ContractDetailPanel({
   }
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <motion.div
+          key="contract-detail"
           initial={{ x: '110%' }}
           animate={{ x: 0 }}
           exit={{ x: '110%' }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
           className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white flex flex-col md:border-l md:border-black z-50 overflow-y-auto"
         >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 bg-white flex-shrink-0">
-          <h2 className="text-2xl font-light text-dark">Contract Details</h2>
-          <button
-            onClick={onClose}
-            className="text-dark/60 hover:text-dark text-2xl transition-colors"
-          >
-            ×
-          </button>
-        </div>
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 bg-white flex-shrink-0">
+            <h2 className="text-2xl font-light text-dark">Contract Details</h2>
+            <button
+              onClick={onClose}
+              className="text-dark/60 hover:text-dark text-2xl transition-colors"
+            >
+              ×
+            </button>
+          </div>
 
-        {/* Form */}
-        <div className="flex-1 p-6 space-y-4 overflow-y-auto w-full md:w-96 pb-24">
+          {/* Form */}
+          <div className="flex-1 p-6 space-y-4 overflow-y-auto pb-24">
           <div>
             <label className="block text-sm font-medium text-dark mb-2">
               Client
@@ -174,36 +175,36 @@ export default function ContractDetailPanel({
           </div>
         </div>
 
-        {/* Footer - Buttons */}
-        <div className="p-6 space-y-2 bg-white sticky bottom-0">
-          <div className="flex flex-col gap-3 text-sm">
-            <button
-              onClick={handleDownloadCSV}
-              className="text-dark hover:text-dark/70 transition-colors text-left"
-            >
-              Download CSV
-            </button>
-            <button
-              onClick={() => {
-                onEmailInvoice?.(contract.id)
-                onClose()
-              }}
-              className="text-dark hover:text-dark/70 transition-colors text-left"
-            >
-              Email Invoice
-            </button>
-            <button
-              onClick={() => {
-                onDelete?.(contract.id)
-                onClose()
-              }}
-              className="text-dark hover:text-dark/70 transition-colors text-left"
-            >
-              Delete Contract
-            </button>
+          {/* Footer - Buttons */}
+          <div className="p-6 space-y-2 bg-white sticky bottom-0">
+            <div className="flex flex-col gap-3 text-sm">
+              <button
+                onClick={handleDownloadCSV}
+                className="text-dark hover:text-dark/70 transition-colors text-left"
+              >
+                Download CSV
+              </button>
+              <button
+                onClick={() => {
+                  onEmailInvoice?.(contract.id)
+                  onClose()
+                }}
+                className="text-dark hover:text-dark/70 transition-colors text-left"
+              >
+                Email Invoice
+              </button>
+              <button
+                onClick={() => {
+                  onDelete?.(contract.id)
+                  onClose()
+                }}
+                className="text-dark hover:text-dark/70 transition-colors text-left"
+              >
+                Delete Contract
+              </button>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
       )}
     </AnimatePresence>
   )

@@ -60,7 +60,7 @@ export default function CustomDropdown({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 mt-1 bg-white border border-black z-50 overflow-visible"
+            className="fixed md:absolute bottom-0 md:bottom-auto left-0 md:left-0 right-0 md:right-0 md:top-full md:mt-1 bg-white border-t md:border-t-0 md:border border-black z-50 overflow-visible md:overflow-y-auto"
             style={{ maxHeight: '300px', overflowY: 'auto' }}
           >
             <div className="py-1">

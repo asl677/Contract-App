@@ -52,6 +52,10 @@ function HomeContent() {
     }
   }, [])
 
+  useEffect(() => {
+    localStorage.setItem('timeEntries', JSON.stringify(entries))
+  }, [entries])
+
   const handleSwipe = () => {
     if (!touchStart.current || !touchEnd.current) return
     const horizontalDistance = touchStart.current.x - touchEnd.current.x
@@ -143,24 +147,13 @@ function HomeContent() {
     }
   }
 
-  const handleDeleteContract = (id: number) => {
-    const contract = contracts.find(c => c.id === id)
-    const updated = contracts.filter((c) => c.id !== id)
-    setContracts(updated)
-    localStorage.setItem('contracts', JSON.stringify(updated))
-    if (contract) {
-      addToast(`Contract deleted: ${contract.client}`, 'success')
-    }
-  }
-
   const handleTrackTime = (contractId: number) => {
     setSelectedContractId(contractId)
     setCurrentPage('time')
   }
 
   const handleSaveTimeEntry = (entry: any) => {
-    setEntries([entry, ...entries])
-    localStorage.setItem('timeEntries', JSON.stringify([entry, ...entries]))
+    setEntries(prev => [entry, ...prev])
     setTimerSeconds(0)
     timerRef.current = 0
     setIsTimerRunning(false)
@@ -174,13 +167,16 @@ function HomeContent() {
     setIsTimerRunning(false)
   }
 
+  const handleClearEntries = () => {
+    setEntries([])
+  }
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen w-full bg-dark text-cream">
       <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
 
-      <div className="flex flex-1 relative overflow-hidden">
-        <main className="flex-1 overflow-y-auto pb-8 md:pb-0 relative md:pl-20">
+      <div className="flex flex-1 overflow-hidden">
+        <main className="flex-1 overflow-y-auto pb-8 md:pb-0 md:pl-20">
         <AnimatePresence>
           {isTimerRunning && (
             <motion.div
@@ -213,9 +209,9 @@ function HomeContent() {
           {currentPage === 'contracts' && <Contracts currentPage={currentPage} onNavigate={(p) => {
             if (p === 'contracts') setShowCreateContract(true)
             else setCurrentPage(p as PageType)
-          }} contracts={contracts} entries={entries} onDeleteContract={handleDeleteContract} onTrackTime={handleTrackTime} />}
+          }} contracts={contracts} entries={entries} onTrackTime={handleTrackTime} />}
           {currentPage === 'jobs' && <Jobs currentPage={currentPage} onNavigate={setCurrentPage} />}
-          {currentPage === 'time' && <TimeTracking currentPage={currentPage} onNavigate={setCurrentPage} contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} entries={entries} />}
+          {currentPage === 'time' && <TimeTracking currentPage={currentPage} onNavigate={setCurrentPage} contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} onClearEntries={handleClearEntries} entries={entries} />}
           {currentPage === 'notes' && <Notes currentPage={currentPage} onNavigate={setCurrentPage} />}
           {currentPage === 'settings' && <Settings currentPage={currentPage} onNavigate={setCurrentPage} />}
         </motion.div>

@@ -1,9 +1,8 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { CheckIcon, ClockIcon, HamburgerMenuIcon } from '@radix-ui/react-icons'
 import { useState, useEffect } from 'react'
-import ContractDetailPanel from '@/components/ContractDetailPanel'
 import CreateContractPanel from '@/components/CreateContractPanel'
 import NavPanel from '@/components/NavPanel'
 import { useToast } from '@/components/Toast'
@@ -28,23 +27,46 @@ const itemVariants = {
   },
 }
 
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return ''
+  const date = new Date(dateStr + 'T00:00:00')
+  const month = date.toLocaleString('en-US', { month: 'long' })
+  const day = date.getDate()
+  const year = date.getFullYear()
+  const suffix = ['th', 'st', 'nd', 'rd'][day % 10 > 3 ? 0 : (day % 100 - day % 10) !== 10 ? day % 10 : 0]
+  return `${month} ${day}${suffix} ${year}`
+}
+
 interface ContractsProps {
   currentPage: 'dashboard' | 'contracts' | 'time' | 'settings' | 'jobs' | 'notes'
   onNavigate: (page: any) => void
   contracts?: any[]
   entries?: any[]
-  onDeleteContract?: (id: number) => void
   onTrackTime?: (contractId: number) => void
 }
 
-export default function Contracts({ currentPage, onNavigate, contracts = [], entries = [], onDeleteContract, onTrackTime }: ContractsProps) {
+export default function Contracts({ currentPage, onNavigate, contracts: passedContracts = [], entries = [], onTrackTime }: ContractsProps) {
   const { addToast } = useToast()
-  const [selectedContractId, setSelectedContractId] = useState<number | null>(null)
+  const [expandedContractId, setExpandedContractId] = useState<number | null>(null)
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [showNav, setShowNav] = useState(false)
   const [isMd, setIsMd] = useState(false)
-  const selectedContract = contracts.find(c => c.id === selectedContractId)
-  const isPanelOpen = !!selectedContractId || showCreateForm
+  const [newContract, setNewContract] = useState({ freelancer: '', client: '', rate: '$200/hr', startDate: '', endDate: '' })
+  const [contracts, setContracts] = useState(passedContracts)
+  const isPanelOpen = showCreateForm
+
+  // Load contracts from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('contracts')
+    if (saved) {
+      setContracts(JSON.parse(saved))
+    }
+  }, [])
+
+  // Save contracts to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('contracts', JSON.stringify(contracts))
+  }, [contracts])
 
   useEffect(() => {
     const checkMd = () => setIsMd(window.innerWidth >= 768)
@@ -53,41 +75,98 @@ export default function Contracts({ currentPage, onNavigate, contracts = [], ent
     return () => window.removeEventListener('resize', checkMd)
   }, [])
 
-  // Lock body scroll when panel open on mobile
-  useEffect(() => {
-    if (isPanelOpen && window.innerWidth < 768) {
-      document.body.style.overflow = 'hidden'
-      return () => {
-        document.body.style.overflow = 'unset'
-      }
+  const handleSaveContract = () => {
+    if (!newContract.client || !newContract.freelancer || !newContract.rate) {
+      addToast('Please fill in all fields', 'error')
+      return
     }
-  }, [isPanelOpen])
+
+    const contract = {
+      id: Date.now(),
+      freelancer: newContract.freelancer,
+      client: newContract.client,
+      rate: newContract.rate,
+      startDate: newContract.startDate,
+      endDate: newContract.endDate,
+      status: 'active'
+    }
+
+    setContracts([...contracts, contract])
+    addToast('Contract created', 'success')
+    setShowCreateForm(false)
+    setNewContract({ freelancer: '', client: '', rate: '$200/hr', startDate: '', endDate: '' })
+  }
+
+  const handleDeleteContract = (contractId: number) => {
+    setContracts(contracts.filter(c => c.id !== contractId))
+    addToast('Contract deleted', 'success')
+  }
+
+  const handleDownloadCSV = (contractId: number) => {
+    const contract = contracts.find(c => c.id === contractId)
+    if (!contract) return
+
+    // Calculate totals for this contract
+    const contractEntries = entries.filter(entry => entry.contract === contract.client)
+    const totalSeconds = contractEntries.reduce((sum, entry) => {
+      const match = entry.duration.match(/(\d+)h\s*(\d+)m\s*(\d+)s/)
+      if (match) {
+        const h = parseInt(match[1]) || 0
+        const m = parseInt(match[2]) || 0
+        const s = parseInt(match[3]) || 0
+        return sum + h * 3600 + m * 60 + s
+      }
+      return sum
+    }, 0)
+
+    const totalHours = Math.floor(totalSeconds / 3600)
+    const totalMinutes = Math.floor((totalSeconds % 3600) / 60)
+    const totalSecs = totalSeconds % 60
+    const totalEarnings = contractEntries.reduce((sum, entry) => {
+      const amount = parseFloat(entry.earnings?.replace('$', '') || '0')
+      return sum + amount
+    }, 0)
+
+    // Create CSV content
+    const headers = ['Date', 'Duration', 'Rate', 'Earnings']
+    const rows = contractEntries.map(entry => [
+      new Date().toISOString().split('T')[0],
+      entry.duration,
+      contract.rate,
+      entry.earnings || '$0.00'
+    ])
+
+    rows.push(['', `${totalHours}h ${totalMinutes}m ${totalSecs}s`, 'Total', `$${totalEarnings.toFixed(2)}`])
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${contract.client.replace(/\s+/g, '_')}_hours.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    addToast('CSV downloaded', 'success')
+  }
 
   return (
     <>
-      <ContractDetailPanel
-        isOpen={!!selectedContractId}
-        contract={selectedContract}
-        entries={entries}
-        onClose={() => setSelectedContractId(null)}
-        onDelete={(id) => {
-          onDeleteContract?.(id)
-          setSelectedContractId(null)
-        }}
-        onDownloadCSV={() => {
-          addToast('CSV downloaded', 'success')
-        }}
-      />
-
       <CreateContractPanel
         isOpen={showCreateForm}
-        onClose={() => setShowCreateForm(false)}
-        newContract={{ freelancer: '', client: '', rate: '', startDate: '', endDate: '' }}
-        onContractChange={() => {}}
-        onSave={() => {
-          addToast('Contract created', 'success')
+        onClose={() => {
           setShowCreateForm(false)
+          setNewContract({ freelancer: '', client: '', rate: '$200/hr', startDate: '', endDate: '' })
         }}
+        newContract={newContract}
+        onContractChange={setNewContract}
+        onSave={handleSaveContract}
       />
     <div className="w-full" style={{ marginRight: isMd && isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}>
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
@@ -118,9 +197,14 @@ export default function Contracts({ currentPage, onNavigate, contracts = [], ent
         onNavigate={onNavigate}
       />
 
-      <div className="px-4 md:px-8 pt-24" style={{ marginRight: isMd && isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}>
+      <motion.div
+        animate={{ opacity: !isMd && showNav ? 0.3 : 1 }}
+        transition={{ duration: 0.2 }}
+        style={{ pointerEvents: !isMd && showNav ? 'none' : 'auto', marginRight: isMd && isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s, opacity 0.2s' }}
+      >
+        <div className="px-4 md:px-8 pt-24">
 
-      {contracts.length === 0 ? (
+          {contracts.length === 0 ? (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">
           <motion.div variants={itemVariants}>
             <button
@@ -133,54 +217,170 @@ export default function Contracts({ currentPage, onNavigate, contracts = [], ent
         </motion.div>
       ) : (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-0">
-          {contracts.map((contract, idx) => (
-            <motion.div
-              key={contract.id}
-              variants={itemVariants}
-              className={`bg-surface pl-0 pr-0 md:pr-6 py-6 transition-colors cursor-pointer ${idx > 0 ? 'border-t border-border' : ''}`}
-              onClick={() => setSelectedContractId(contract.id)}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-xl font-light mb-1">{contract.client}</h3>
-                  <p className="text-cream/60 font-mono text-sm">{contract.rate}</p>
+          {contracts.map((contract, idx) => {
+            const isExpanded = expandedContractId === contract.id
+            const contractEntries = entries.filter(entry => entry.contract === contract.client)
+            const totalSeconds = contractEntries.reduce((sum, entry) => {
+              const match = entry.duration.match(/(\d+)h\s*(\d+)m\s*(\d+)s/)
+              if (match) {
+                const h = parseInt(match[1]) || 0
+                const m = parseInt(match[2]) || 0
+                const s = parseInt(match[3]) || 0
+                return sum + h * 3600 + m * 60 + s
+              }
+              return sum
+            }, 0)
+            const totalHours = Math.floor(totalSeconds / 3600)
+            const totalMinutes = Math.floor((totalSeconds % 3600) / 60)
+            const totalSecs = totalSeconds % 60
+            const totalEarnings = contractEntries.reduce((sum, entry) => {
+              const amount = parseFloat(entry.earnings?.replace('$', '') || '0')
+              return sum + amount
+            }, 0)
+
+            return (
+              <motion.div key={contract.id} variants={itemVariants} className="space-y-0">
+                <div
+                  className={`bg-surface pl-0 pr-0 md:pr-6 py-6 transition-colors cursor-pointer ${idx > 0 ? 'border-t border-border' : ''}`}
+                  onClick={() => setExpandedContractId(isExpanded ? null : contract.id)}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-xl font-light mb-1">{contract.client}</h3>
+                      <p className="text-cream/60 font-mono text-sm">{contract.rate}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      {contract.status === 'active' ? (
+                        <div className="flex items-center gap-1 text-mint">
+                          <CheckIcon width={16} height={16} />
+                          <span className="font-mono text-xs">Active</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-coral">
+                          <ClockIcon width={16} height={16} />
+                          <span className="font-mono text-xs">Pending</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-cream/50 font-mono text-xs">Started {contract.startDate}</p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onTrackTime?.(contract.id)
+                        }}
+                        className="text-mint hover:text-mint/80 font-mono text-xs transition-colors"
+                      >
+                        Track
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDeleteContract(contract.id)
+                        }}
+                        className="text-coral hover:text-coral/80 font-mono text-xs transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  {contract.status === 'active' ? (
-                    <div className="flex items-center gap-1 text-mint">
-                      <CheckIcon width={16} height={16} />
-                      <span className="font-mono text-xs">Active</span>
+
+                {/* Expanded Details */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: 'auto' }}
+                      exit={{ height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="border-t border-border overflow-hidden"
+                    >
+                      <div className="grid grid-cols-3 gap-6 mb-4 py-4">
+                      {/* Column 1 */}
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-cream/50 font-mono text-xs mb-1">Freelancer</p>
+                          <p className="text-cream font-light text-sm">{contract.freelancer}</p>
+                        </div>
+                        <div>
+                          <p className="text-cream/50 font-mono text-xs mb-1">Rate</p>
+                          <p className="text-cream font-light text-sm">{contract.rate}</p>
+                        </div>
+                      </div>
+
+                      {/* Column 2 */}
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-cream/50 font-mono text-xs mb-1">Start Date</p>
+                          <p className="text-cream font-light text-sm">{formatDate(contract.startDate)}</p>
+                        </div>
+                        <div>
+                          <p className="text-cream/50 font-mono text-xs mb-1">End Date</p>
+                          <p className="text-cream font-light text-sm">{formatDate(contract.endDate)}</p>
+                        </div>
+                        <div>
+                          <p className="text-cream/50 font-mono text-xs mb-1">Status</p>
+                          <p className="text-cream font-light text-sm capitalize">{contract.status}</p>
+                        </div>
+                      </div>
+
+                      {/* Column 3 */}
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-cream/50 font-mono text-xs mb-1">Hours Tracked</p>
+                          <p className="text-cream font-light text-sm">{totalHours}h {totalMinutes}m {totalSecs}s</p>
+                        </div>
+                        <div>
+                          <p className="text-cream/50 font-mono text-xs mb-1">Entries</p>
+                          <p className="text-cream font-light text-sm">{contractEntries.length}</p>
+                        </div>
+                        <div>
+                          <p className="text-cream/50 font-mono text-xs mb-1">Total Earnings</p>
+                          <p className="text-cream font-light text-sm">${totalEarnings.toFixed(2)}</p>
+                        </div>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-1 text-coral">
-                      <ClockIcon width={16} height={16} />
-                      <span className="font-mono text-xs">Pending</span>
-                    </div>
+
+                    {/* Actions */}
+                    <div className="mb-4 flex gap-4 text-sm">
+                      <button
+                        onClick={() => handleDownloadCSV(contract.id)}
+                        className="text-cream/70 hover:text-cream transition-colors"
+                      >
+                        Download CSV
+                      </button>
+                      <button
+                        onClick={() => {
+                          const invoiceUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/invoice/${contract.id}`
+                          navigator.clipboard.writeText(invoiceUrl)
+                          addToast('Invoice link copied', 'success')
+                        }}
+                        className="text-cream/70 hover:text-cream transition-colors"
+                      >
+                        Copy Invoice Link
+                      </button>
+                      <button
+                        onClick={() => {
+                          addToast('Invoice sent', 'success')
+                        }}
+                        className="text-cream/70 hover:text-cream transition-colors"
+                      >
+                        Email Invoice
+                      </button>
+                      </div>
+                    </motion.div>
                   )}
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-cream/50 font-mono text-xs">Started {contract.startDate}</p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => onTrackTime?.(contract.id)}
-                    className="text-mint hover:text-mint/80 font-mono text-xs transition-colors"
-                  >
-                    Track
-                  </button>
-                  <button
-                    onClick={() => onDeleteContract?.(contract.id)}
-                    className="text-coral hover:text-coral/80 font-mono text-xs transition-colors"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+                </AnimatePresence>
+              </motion.div>
+            )
+          })}
         </motion.div>
       )}
-      </div>
+        </div>
+      </motion.div>
     </div>
     </>
   )

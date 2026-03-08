@@ -47,18 +47,17 @@ export default function FilterPanel({
   salaries,
 }: FilterPanelProps) {
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
-        <>
-          {/* Panel */}
-          <motion.div
-            initial={{ x: '110%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '110%' }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white md:bg-dark z-50 overflow-y-auto md:border-l md:border-black flex flex-col"
-            style={{ right: '-10px' }}
-          >
+        <motion.div
+          key="filter-panel"
+          initial={{ x: '110%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '110%' }}
+          transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
+          className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white md:bg-dark z-50 overflow-y-auto md:border-l md:border-black flex flex-col"
+          style={{ right: '-10px' }}
+        >
             {/* Header */}
             <div className="sticky top-0 bg-white md:bg-dark px-6 py-4 flex items-center justify-between">
               <h2 className="text-lg font-light text-dark md:text-cream">Filters</h2>
@@ -126,7 +125,6 @@ export default function FilterPanel({
               />
             </div>
           </motion.div>
-        </>
       )}
     </AnimatePresence>
   )

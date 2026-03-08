@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
 import NavPanel from '@/components/NavPanel'
 
@@ -34,6 +34,14 @@ const itemVariants = {
 
 export default function Dashboard({ currentPage, onNavigate, contracts = [], entries = [] }: DashboardProps) {
   const [showNav, setShowNav] = useState(false)
+  const [isMd, setIsMd] = useState(false)
+
+  useEffect(() => {
+    const checkMd = () => setIsMd(window.innerWidth >= 768)
+    checkMd()
+    window.addEventListener('resize', checkMd)
+    return () => window.removeEventListener('resize', checkMd)
+  }, [])
 
   // Calculate total earnings all time
   const totalEarningsAllTime = entries.reduce((sum, entry) => {
@@ -69,13 +77,16 @@ export default function Dashboard({ currentPage, onNavigate, contracts = [], ent
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Work</h1>
-        <button
-          onClick={() => setShowNav(!showNav)}
-          className="text-cream hover:text-coral transition-colors md:hidden"
-          aria-label="Toggle navigation"
-        >
-          <HamburgerMenuIcon width={22} height={22} />
-        </button>
+        <div className="flex items-center gap-8">
+          <p className="text-mint font-sans font-medium text-2xl hidden md:block">${totalEarningsAllTime.toFixed(2)}</p>
+          <button
+            onClick={() => setShowNav(!showNav)}
+            className="text-cream hover:text-coral transition-colors md:hidden"
+            aria-label="Toggle navigation"
+          >
+            <HamburgerMenuIcon width={22} height={22} />
+          </button>
+        </div>
       </motion.div>
 
       <NavPanel
@@ -87,16 +98,21 @@ export default function Dashboard({ currentPage, onNavigate, contracts = [], ent
       <motion.p variants={itemVariants} initial="hidden" animate="visible"
         className="fixed top-20 left-0 right-0 md:left-20 bg-dark px-4 md:px-8 text-cream/60 font-mono text-sm mb-8 pt-0 z-39"
       >
-        {dateString} • ${totalEarningsAllTime.toFixed(2)} earned
+        {dateString}
       </motion.p>
 
-      <div className="pt-32 md:pt-32 pb-24 md:pb-8">
-        <motion.div
-          className="px-4 md:px-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
+      <motion.div
+        animate={{ opacity: !isMd && showNav ? 0.3 : 1 }}
+        transition={{ duration: 0.2 }}
+        style={{ pointerEvents: !isMd && showNav ? 'none' : 'auto' }}
+      >
+        <div className="pt-32 md:pt-32 pb-24 md:pb-8">
+          <motion.div
+            className="px-4 md:px-8"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
           {/* Active Contracts Section */}
           {contracts.length > 0 && (
             <div className="mb-12">
@@ -188,8 +204,9 @@ export default function Dashboard({ currentPage, onNavigate, contracts = [], ent
               </button>
             </motion.div>
           )}
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+      </motion.div>
     </div>
   )
 }

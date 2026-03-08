@@ -64,6 +64,46 @@ html {
   animation: pulse-opacity 2s ease-in-out infinite;
 }
 
+@keyframes underline-slide {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.link-underline:hover::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 768px) {
+  .link-underline::after {
+    animation: none;
+    display: none;
+  }
+}
+
 /* Framer Motion GPU acceleration for Safari Mobile */
 [data-framer-motion-layout],
 [style*="opacity"],
@@ -75,7 +115,8 @@ html {
 
 /* Reduce animation complexity on mobile Safari */
 @media (max-width: 768px) {
-  * {
+  *:not([style*="position: fixed"]),
+  *:not(.fixed) {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
   }

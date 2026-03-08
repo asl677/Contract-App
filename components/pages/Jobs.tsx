@@ -112,6 +112,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
         document.body.style.overflow = 'unset'
       }
     }
+    return () => {}
   }, [showFilters])
 
   const types = ['All', 'Frontend', 'Backend', 'Full Stack', 'Design', 'Product', 'DevOps', 'Data Science', 'Mobile', 'AI/ML', 'Security', 'Cloud']
@@ -133,9 +134,20 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
     }
 
     try {
-      const limit = newOffset === 0 ? 10 : 10
+      const limit = 40
       const response = await fetch(`/api/jobs?offset=${newOffset}&limit=${limit}`)
-      const data: JobsResponse = await response.json()
+
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}`)
+      }
+
+      let data: JobsResponse
+      try {
+        data = await response.json()
+      } catch (parseError) {
+        console.error('Failed to parse jobs response:', parseError)
+        throw new Error('Invalid JSON response from API')
+      }
 
       if (newOffset === 0) {
         setDisplayedJobs(data.jobs)

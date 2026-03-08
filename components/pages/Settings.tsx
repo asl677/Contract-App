@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
 import NavPanel from '@/components/NavPanel'
+import { useToast } from '@/components/Toast'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -31,6 +32,7 @@ interface SettingsProps {
 }
 
 export default function Settings({ currentPage, onNavigate }: SettingsProps) {
+  const { addToast } = useToast()
   const [showNav, setShowNav] = useState(false)
   const [enabledSources, setEnabledSources] = useState({
     'Greenhouse': true,
@@ -130,13 +132,42 @@ export default function Settings({ currentPage, onNavigate }: SettingsProps) {
 
           <motion.div
             variants={itemVariants}
-            className="bg-surface pl-0 pr-0 py-4 flex items-center justify-between"
+            className="bg-surface pl-0 pr-0 py-2 flex items-center justify-between"
+          >
+            <a
+              href="https://github.com/asl677/free-app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-underline font-mono text-sm text-cream/70 hover:text-cream transition-colors"
+            >
+              Star the repo
+            </a>
+          </motion.div>
+
+          <motion.div
+            variants={itemVariants}
+            className="bg-surface pl-0 pr-0 py-2 flex items-center justify-between"
+          >
+            <button
+              onClick={() => {
+                localStorage.clear()
+                addToast('All data cleared', 'success')
+              }}
+              className="link-underline font-mono text-sm text-cream/70 hover:text-cream transition-colors text-left"
+            >
+              Clear all
+            </button>
+          </motion.div>
+
+          <motion.div
+            variants={itemVariants}
+            className="bg-surface pl-0 pr-0 py-2 flex items-center justify-between"
           >
             <a
               href="https://www.linkedin.com/in/latenights/"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-sm text-cream/70 hover:text-cream transition-colors"
+              className="link-underline font-mono text-sm text-cream/70 hover:text-cream transition-colors"
             >
               Buy Alex a coffee
             </a>
