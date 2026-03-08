@@ -38,7 +38,6 @@ export default function FilterPanel({
   types,
   locations,
   sources,
-  employmentTypes,
   salaries,
 }: FilterPanelProps) {
   return (
