@@ -203,22 +203,25 @@ function HomeContent() {
             </motion.div>
           )}
         </AnimatePresence>
-        <motion.div
-          key={currentPage}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-        >
-          {currentPage === 'dashboard' && <Dashboard currentPage={currentPage} onNavigate={setCurrentPage} contracts={contracts} entries={entries} />}
-          {currentPage === 'contracts' && <Contracts currentPage={currentPage} onNavigate={(p) => {
-            if (p === 'contracts') setShowCreateContract(true)
-            else setCurrentPage(p as PageType)
-          }} contracts={contracts} entries={entries} onTrackTime={handleTrackTime} />}
-          {currentPage === 'jobs' && <Jobs currentPage={currentPage} onNavigate={setCurrentPage} />}
-          {currentPage === 'time' && <TimeTracking currentPage={currentPage} onNavigate={setCurrentPage} contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} onClearEntries={handleClearEntries} entries={entries} />}
-          {currentPage === 'notes' && <Notes currentPage={currentPage} onNavigate={setCurrentPage} />}
-          {currentPage === 'settings' && <Settings currentPage={currentPage} onNavigate={setCurrentPage} />}
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {currentPage === 'dashboard' && <Dashboard currentPage={currentPage} onNavigate={setCurrentPage} contracts={contracts} entries={entries} />}
+            {currentPage === 'contracts' && <Contracts currentPage={currentPage} onNavigate={(p) => {
+              if (p === 'contracts') setShowCreateContract(true)
+              else setCurrentPage(p as PageType)
+            }} contracts={contracts} entries={entries} onTrackTime={handleTrackTime} />}
+            {currentPage === 'jobs' && <Jobs currentPage={currentPage} onNavigate={setCurrentPage} />}
+            {currentPage === 'time' && <TimeTracking currentPage={currentPage} onNavigate={setCurrentPage} contracts={contracts} selectedContractId={selectedContractId} onSelectContract={setSelectedContractId} isRunning={isTimerRunning} time={timerSeconds} onStart={handleStartTimer} onStop={handleStopTimer} onSaveEntry={handleSaveTimeEntry} onClearEntries={handleClearEntries} entries={entries} />}
+            {currentPage === 'notes' && <Notes currentPage={currentPage} onNavigate={setCurrentPage} />}
+            {currentPage === 'settings' && <Settings currentPage={currentPage} onNavigate={setCurrentPage} />}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
         <CreateContractPanel

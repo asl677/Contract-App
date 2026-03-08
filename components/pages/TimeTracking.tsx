@@ -95,7 +95,7 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 1.3 }}
           className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-50 px-4 md:px-8 py-4 flex items-center justify-between"
         >
         <h1 className="text-4xl font-light">Track</h1>
@@ -232,9 +232,18 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
             ))}
             </motion.div>
           ) : (
-            <div className="text-cream/40 py-8 text-center">
-              No entries yet
-            </div>
+            <motion.div
+              key="no-entries"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+              className="flex items-center justify-center h-screen"
+              style={{ marginTop: '5vh' }}
+            >
+              <div className="text-cream/40 text-center">
+                No entries yet
+              </div>
+            </motion.div>
           )}
         </div>
       </motion.div>

@@ -238,7 +238,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 1.3 }}
           className="fixed top-0 left-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
           style={{ right: isMd && showFilters ? 384 : 0, transition: 'right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}
         >
