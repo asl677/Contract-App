@@ -1,8 +1,6 @@
-# Free - A Simple Freelance Job Board
+# Free - A Job Board for Remote Work
 
 A minimal, modern web application for freelancers to discover job opportunities, manage contracts, and track billable hours all in one place.
-
-**Live Demo:** [https://freelancer-app-gamma.vercel.app](https://freelancer-app-gamma.vercel.app)
 
 ## Features
 
