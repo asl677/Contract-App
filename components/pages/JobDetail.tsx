@@ -78,7 +78,7 @@ export default function JobDetail({ jobId, onNavigate }: JobDetailProps) {
 
   return (
     <div className="w-full">
-      <motion.div variants={itemVariants} initial="hidden" animate="visible"
+      <div
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-8 flex items-center gap-4"
       >
         <button
@@ -89,7 +89,7 @@ export default function JobDetail({ jobId, onNavigate }: JobDetailProps) {
           <ArrowLeftIcon width={24} height={24} />
         </button>
         <h1 className="text-4xl font-light">{job.title}</h1>
-      </motion.div>
+      </div>
 
       <div className="px-4 md:px-8 py-8 pt-24">
         <motion.div variants={itemVariants} initial="hidden" animate="visible"

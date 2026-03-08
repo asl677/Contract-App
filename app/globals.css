@@ -113,14 +113,6 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Reduce animation complexity on mobile Safari */
-@media (max-width: 768px) {
-  *:not([style*="position: fixed"]),
-  *:not(.fixed) {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
 
 /* Hide scrollbars */
 html, body, main, div {

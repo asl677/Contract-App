@@ -169,7 +169,7 @@ export default function Contracts({ currentPage, onNavigate, contracts: passedCo
         onSave={handleSaveContract}
       />
     <div className="w-full" style={{ marginRight: isMd && isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}>
-      <motion.div variants={itemVariants} initial="hidden" animate="visible"
+      <div
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
         style={{ marginRight: isMd && isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}
       >
@@ -188,7 +188,7 @@ export default function Contracts({ currentPage, onNavigate, contracts: passedCo
             <HamburgerMenuIcon width={22} height={22} />
           </button>
         </div>
-      </motion.div>
+      </div>
 
       <NavPanel
         isOpen={showNav}

@@ -73,7 +73,7 @@ export default function Dashboard({ currentPage, onNavigate, contracts = [], ent
 
   return (
     <div className="w-full">
-      <motion.div variants={itemVariants} initial="hidden" animate="visible"
+      <div
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Work</h1>
@@ -87,7 +87,7 @@ export default function Dashboard({ currentPage, onNavigate, contracts = [], ent
             <HamburgerMenuIcon width={22} height={22} />
           </button>
         </div>
-      </motion.div>
+      </div>
 
       <NavPanel
         isOpen={showNav}
