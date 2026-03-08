@@ -102,7 +102,6 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
 
   const types = ['All', 'Frontend', 'Backend', 'Full Stack', 'Design', 'Product', 'DevOps', 'Data Science', 'Mobile', 'AI/ML', 'Security', 'Cloud']
   const locations = ['All', 'Remote', 'San Francisco, CA', 'New York, NY', 'Austin, TX', 'Seattle, WA', 'Los Angeles, CA', 'Chicago, IL', 'Boston, MA']
-  const employmentTypes = ['All', 'Full-time', 'Fractional']
   const salaries = ['All', '$', '$$', '$$$', '$$$$']
 
   // Dynamically derive sources from actual jobs
