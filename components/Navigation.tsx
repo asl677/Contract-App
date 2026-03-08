@@ -140,15 +140,17 @@ export default function Navigation({ currentPage, onNavigate }: NavigationProps)
                 buttonRefs.current[idx] = el
               }}
               onClick={() => onNavigate(id as any)}
-              className={`flex items-center justify-center transition-all duration-200 relative z-10 rounded ${
+              className={`flex items-center justify-center transition-all duration-200 relative z-10 rounded group ${
                 currentPage === id
                   ? 'bg-coral text-dark'
                   : 'text-cream hover:bg-white/20'
               }`}
-              title={label}
               aria-label={label}
             >
               <Icon width={24} height={24} />
+              <div className="absolute left-full ml-2 px-2 py-1 bg-white text-black text-xs whitespace-nowrap rounded border border-black opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                {label}
+              </div>
             </button>
           ) : (
             <motion.button
@@ -157,18 +159,20 @@ export default function Navigation({ currentPage, onNavigate }: NavigationProps)
                 buttonRefs.current[idx] = el
               }}
               onClick={() => onNavigate(id as any)}
-              className={`flex items-center justify-center transition-all duration-200 relative z-10 rounded ${
+              className={`flex items-center justify-center transition-all duration-200 relative z-10 rounded group ${
                 currentPage === id
                   ? 'bg-coral text-dark'
                   : 'text-cream hover:bg-white/20'
               }`}
-              title={label}
               aria-label={label}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, ease: 'easeInOut', delay: idx * 0.05 }}
             >
               <Icon width={24} height={24} />
+              <div className="absolute left-full ml-2 px-2 py-1 bg-white text-black text-xs whitespace-nowrap rounded border border-black opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                {label}
+              </div>
             </motion.button>
           )
         )}

@@ -231,7 +231,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
   }), [displayedJobs, search, typeFilter, locationFilter, sourceFilter, employmentFilter, salaryFilter])
 
   return (
-    <div className="overflow-x-hidden" style={{ maxWidth: isMd && showFilters ? 'calc(100% - 384px)' : '100%', transition: 'max-width 0.3s ease-in-out' }}>
+    <div className="overflow-x-hidden" style={{ maxWidth: isMd && showFilters ? 'calc(100% - 384px)' : '100%', transition: 'max-width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}>
       <AnimatePresence mode="wait">
         <motion.div
           key="jobs-header"
@@ -240,7 +240,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 1 }}
           className="fixed top-0 left-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
-          style={{ right: isMd && showFilters ? 384 : 0, transition: 'right 0.3s ease-in-out' }}
+          style={{ right: isMd && showFilters ? 384 : 0, transition: 'right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}
         >
         <h1 className="text-4xl font-light">Jobs</h1>
         <div className="flex items-center gap-4">

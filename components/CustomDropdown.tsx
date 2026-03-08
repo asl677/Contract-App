@@ -61,7 +61,7 @@ export default function CustomDropdown({
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
             className="absolute top-full left-0 right-0 mt-1 bg-white border border-black z-[999] overflow-y-auto"
-            style={{ maxHeight: '300px', overflowY: 'auto' }}
+            style={{ maxHeight: '200px', overflowY: 'auto' }}
           >
             <div className="py-1">
               {options.map((option, idx) => (
@@ -71,13 +71,15 @@ export default function CustomDropdown({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.15, delay: isSafari ? 0 : idx * 0.02 }}
-                  className={`w-full px-4 py-2 text-left text-sm transition-colors whitespace-nowrap ${
+                  className={`w-full px-4 py-2 text-left text-sm transition-colors block min-w-0 ${
                     value === option
                       ? 'bg-black/10 text-black'
                       : 'text-black/70 hover:bg-black/5 hover:text-black'
                   }`}
                 >
-                  {displayFormat(option)}
+                  <span className="overflow-hidden text-ellipsis whitespace-nowrap block">
+                    {displayFormat(option)}
+                  </span>
                 </motion.button>
               ))}
             </div>

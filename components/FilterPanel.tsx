@@ -54,7 +54,7 @@ export default function FilterPanel({
           initial={{ x: '110%' }}
           animate={{ x: 0 }}
           exit={{ x: '110%' }}
-          transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
+          transition={{ type: 'tween', duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white md:bg-dark z-50 overflow-y-auto md:border-l md:border-black flex flex-col px-4 md:px-0"
         >
             {/* Header */}
