@@ -83,7 +83,6 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
   const [typeFilter, setTypeFilter] = useState('All')
   const [locationFilter, setLocationFilter] = useState('All')
   const [sourceFilter, setSourceFilter] = useState('All')
-  const [employmentFilter, setEmploymentFilter] = useState('All')
   const [salaryFilter, setSalaryFilter] = useState('All')
   const [displayedJobs, setDisplayedJobs] = useState<Job[]>([])
   const [showFilters, setShowFilters] = useState(false)
@@ -225,10 +224,9 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
     const matchType = typeFilter === 'All' || job.type === typeFilter
     const matchLocation = locationFilter === 'All' || job.location === locationFilter
     const matchSource = sourceFilter === 'All' || job.board === sourceFilter
-    const matchEmployment = employmentFilter === 'All' || getEmploymentType(job.duration) === employmentFilter
     const matchSalary = salaryFilter === 'All' || getSalaryRange(job.salary) === salaryFilter
-    return matchSearch && matchType && matchLocation && matchSource && matchEmployment && matchSalary
-  }), [displayedJobs, search, typeFilter, locationFilter, sourceFilter, employmentFilter, salaryFilter])
+    return matchSearch && matchType && matchLocation && matchSource && matchSalary
+  }), [displayedJobs, search, typeFilter, locationFilter, sourceFilter, salaryFilter])
 
   return (
     <div className="overflow-x-hidden" style={{ maxWidth: isMd && showFilters ? 'calc(100% - 384px)' : '100%', transition: 'max-width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}>
@@ -303,8 +301,6 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
             onLocationChange={setLocationFilter}
             sourceFilter={sourceFilter}
             onSourceChange={setSourceFilter}
-            employmentFilter={employmentFilter}
-            onEmploymentChange={setEmploymentFilter}
             salaryFilter={salaryFilter}
             onSalaryChange={setSalaryFilter}
             types={types}
@@ -328,7 +324,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
             style={{ pointerEvents: !isMd && showFilters ? 'none' : 'auto' }}
           >
             <motion.div
-            key={`${typeFilter}-${locationFilter}-${search}-${sourceFilter}-${employmentFilter}-${salaryFilter}`}
+            key={`${typeFilter}-${locationFilter}-${search}-${sourceFilter}-${salaryFilter}`}
             variants={containerVariants}
             initial="hidden"
             animate="visible"

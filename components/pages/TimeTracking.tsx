@@ -237,8 +237,7 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.3 }}
-              className="flex items-center justify-center h-screen"
-              style={{ marginTop: '5vh' }}
+              className="flex items-center justify-center min-h-[100dvh]"
             >
               <div className="text-cream/40 text-center">
                 No entries yet

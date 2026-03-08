@@ -14,14 +14,11 @@ interface FilterPanelProps {
   onLocationChange: (value: string) => void
   sourceFilter: string
   onSourceChange: (value: string) => void
-  employmentFilter: string
-  onEmploymentChange: (value: string) => void
   salaryFilter: string
   onSalaryChange: (value: string) => void
   types: string[]
   locations: string[]
   sources: string[]
-  employmentTypes: string[]
   salaries: string[]
 }
 
@@ -36,8 +33,6 @@ export default function FilterPanel({
   onLocationChange,
   sourceFilter,
   onSourceChange,
-  employmentFilter,
-  onEmploymentChange,
   salaryFilter,
   onSalaryChange,
   types,
@@ -105,14 +100,6 @@ export default function FilterPanel({
                 onChange={onSourceChange}
                 options={sources}
                 displayFormat={(v) => v === 'All' ? 'All Sources' : v}
-              />
-
-              {/* Employment Type */}
-              <CustomDropdown
-                value={employmentFilter}
-                onChange={onEmploymentChange}
-                options={employmentTypes}
-                displayFormat={(v) => v === 'All' ? 'All Types' : v}
               />
 
               {/* Salary */}
