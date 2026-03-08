@@ -66,7 +66,7 @@ export default function Notes({ currentPage, onNavigate }: NotesProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-[22px] flex items-center justify-between"
+        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Notes</h1>
         <div className="flex items-center gap-4">
