@@ -506,9 +506,13 @@ export async function GET(request: Request) {
     const allJobsArrays = await Promise.all(jobPromises)
     let allJobs = allJobsArrays.flat()
 
-    // If external APIs fail, use massive fallback
-    if (allJobs.length < 30) {
-      console.log('External APIs returned insufficient data, using fallback')
+    // Count successful sources
+    const successfulSources = allJobsArrays.filter(arr => arr.length > 0).length
+    console.log(`Jobs from ${successfulSources} sources, total: ${allJobs.length}`)
+
+    // If fewer than 3 sources returned jobs OR < 100 total jobs, mix in fallback for variety
+    if (successfulSources < 3 || allJobs.length < 100) {
+      console.log(`Low variety detected (${successfulSources} sources), mixing in fallback`)
       allJobs = [...allJobs, ...MASSIVE_FALLBACK_JOBS]
     }
 
