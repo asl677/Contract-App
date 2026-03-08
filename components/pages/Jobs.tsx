@@ -104,6 +104,16 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
     return () => window.removeEventListener('resize', checkMd)
   }, [])
 
+  // Lock body scroll when filter panel open on mobile
+  useEffect(() => {
+    if (showFilters && window.innerWidth < 768) {
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = 'unset'
+      }
+    }
+  }, [showFilters])
+
   const types = ['All', 'Frontend', 'Backend', 'Full Stack', 'Design', 'Product', 'DevOps', 'Data Science', 'Mobile', 'AI/ML', 'Security', 'Cloud']
   const locations = ['All', 'Remote', 'San Francisco, CA', 'New York, NY', 'Austin, TX', 'Seattle, WA', 'Los Angeles, CA', 'Chicago, IL', 'Boston, MA']
   const employmentTypes = ['All', 'Full-time', 'Fractional']
@@ -171,7 +181,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
 
   // Infinite scroll observer
   useEffect(() => {
-    if (!sentinelRef.current || isLoadingMore || !hasMore) return
+    if (!sentinelRef.current) return
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -179,7 +189,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
           fetchJobs(offset)
         }
       },
-      { rootMargin: '500px' }
+      { rootMargin: '1000px' }
     )
 
     observer.observe(sentinelRef.current)
@@ -235,11 +245,19 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
         </div>
       </motion.div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center min-h-[100dvh]">
-          <p className="text-cream/50 font-mono text-sm pulse-text">Grabbin' jobs</p>
-        </div>
-      ) : displayedJobs.length === 0 ? (
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <motion.div
+            key="loading"
+            className="flex items-center justify-center min-h-[100dvh]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <p className="text-cream/50 font-mono text-sm pulse-text">Grabbin' jobs</p>
+          </motion.div>
+        ) : displayedJobs.length === 0 ? (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">
           <motion.div variants={itemVariants}>
             <p className="text-cream font-mono font-medium">No jobs found</p>
@@ -303,7 +321,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
                     <h3 className="text-xl font-light mb-1">{job.title}</h3>
                     <p className="text-cream/60 font-mono text-sm">{job.type} <span className="text-xs">•</span> Remote <span className="text-xs">•</span> {getSalaryRange(job.salary)}</p>
                   </div>
-                  <div className="ml-auto pl-4 max-w-[140px] md:max-w-none">
+                  <div className="ml-auto pl-4 md:text-right">
                     <p className="text-xl md:text-3xl text-mint font-sans font-medium">{job.company}</p>
                   </div>
                 </div>
@@ -348,7 +366,8 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
         )}
           </div>
         </>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   )
 }

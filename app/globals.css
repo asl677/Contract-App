@@ -49,16 +49,36 @@ html {
 
 /* Animations */
 @keyframes pulse-opacity {
-  0%, 100% {
-    opacity: 1;
+  0% {
+    opacity: 0.1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.1;
   }
 }
 
 .pulse-text {
   animation: pulse-opacity 2s ease-in-out infinite;
+}
+
+/* Framer Motion GPU acceleration for Safari Mobile */
+[data-framer-motion-layout],
+[style*="opacity"],
+[style*="transform"] {
+  will-change: auto;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Reduce animation complexity on mobile Safari */
+@media (max-width: 768px) {
+  * {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 /* Hide scrollbars */

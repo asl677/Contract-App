@@ -1,7 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { TrashIcon, DownloadIcon } from '@radix-ui/react-icons'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ContractDetailPanelProps {
   isOpen: boolean
@@ -87,15 +86,15 @@ export default function ContractDetailPanel({
   }
 
   return (
-    <>
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: isOpen ? 384 : 0 }}
-        exit={{ width: 0 }}
-        transition={{ duration: 0.3 }}
-        className="fixed right-0 top-0 bg-white border-l border-black flex flex-col h-screen overflow-hidden"
-        style={{ width: isOpen ? 384 : 0, zIndex: 9999999 }}
-      >
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ x: '110%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '110%' }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white flex flex-col md:border-l md:border-black z-50 overflow-y-auto"
+        >
         {/* Header */}
         <div className="flex items-center justify-between p-6 bg-white flex-shrink-0">
           <h2 className="text-2xl font-light text-dark">Contract Details</h2>
@@ -108,7 +107,7 @@ export default function ContractDetailPanel({
         </div>
 
         {/* Form */}
-        <div className="flex-1 p-6 space-y-4 overflow-y-auto w-96">
+        <div className="flex-1 p-6 space-y-4 overflow-y-auto w-full md:w-96 pb-24">
           <div>
             <label className="block text-sm font-medium text-dark mb-2">
               Client
@@ -180,9 +179,8 @@ export default function ContractDetailPanel({
           <div className="flex flex-col gap-3 text-sm">
             <button
               onClick={handleDownloadCSV}
-              className="text-dark hover:text-dark/70 transition-colors flex items-center gap-2 text-left"
+              className="text-dark hover:text-dark/70 transition-colors text-left"
             >
-              <DownloadIcon width={16} height={16} />
               Download CSV
             </button>
             <button
@@ -199,14 +197,14 @@ export default function ContractDetailPanel({
                 onDelete?.(contract.id)
                 onClose()
               }}
-              className="text-dark hover:text-dark/70 transition-colors flex items-center gap-2 text-left"
+              className="text-dark hover:text-dark/70 transition-colors text-left"
             >
-              <TrashIcon width={16} height={16} />
               Delete Contract
             </button>
           </div>
         </div>
       </motion.div>
-    </>
+      )}
+    </AnimatePresence>
   )
 }

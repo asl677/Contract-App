@@ -50,23 +50,13 @@ export default function FilterPanel({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/20 md:bg-transparent z-40"
-          />
-
           {/* Panel */}
           <motion.div
             initial={{ x: '110%' }}
             animate={{ x: 0 }}
             exit={{ x: '110%' }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white md:bg-dark z-50 overflow-y-auto md:border-l md:border-black"
+            className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white md:bg-dark z-50 overflow-y-auto md:border-l md:border-black flex flex-col"
             style={{ right: '-10px' }}
           >
             {/* Header */}

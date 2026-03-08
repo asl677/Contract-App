@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const inputStyle = `
   input[type="text"],
@@ -33,13 +33,15 @@ export default function CreateContractPanel({
   return (
     <>
       <style>{inputStyle}</style>
-      <motion.div
-        initial={{ x: '110%' }}
-        animate={{ x: isOpen ? 0 : '110%' }}
-        exit={{ x: '110%' }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white md:bg-dark z-50 overflow-y-auto md:border-l md:border-black"
-      >
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ x: '110%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '110%' }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white md:bg-dark z-50 overflow-y-auto md:border-l md:border-black flex flex-col"
+          >
       {/* Header */}
       <div className="sticky top-0 bg-white md:bg-dark px-6 py-4 flex items-center justify-between">
         <h2 className="text-lg font-light text-dark md:text-cream">New Contract</h2>
@@ -55,7 +57,7 @@ export default function CreateContractPanel({
       </div>
 
       {/* Form */}
-      <div className="flex-1 p-6 space-y-4 overflow-y-auto">
+      <div className="flex-1 p-6 space-y-4 overflow-y-auto pb-24">
         <div className="text-sm text-dark/60 leading-relaxed">
           Payments are handled outside of this app. This contract binding is for legal record-keeping only.
         </div>
@@ -162,6 +164,8 @@ export default function CreateContractPanel({
         </div>
       </div>
     </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { CheckIcon, ClockIcon, HamburgerMenuIcon } from '@radix-ui/react-icons'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ContractDetailPanel from '@/components/ContractDetailPanel'
 import CreateContractPanel from '@/components/CreateContractPanel'
 import NavPanel from '@/components/NavPanel'
@@ -42,8 +42,26 @@ export default function Contracts({ currentPage, onNavigate, contracts = [], ent
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null)
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [showNav, setShowNav] = useState(false)
+  const [isMd, setIsMd] = useState(false)
   const selectedContract = contracts.find(c => c.id === selectedContractId)
   const isPanelOpen = !!selectedContractId || showCreateForm
+
+  useEffect(() => {
+    const checkMd = () => setIsMd(window.innerWidth >= 768)
+    checkMd()
+    window.addEventListener('resize', checkMd)
+    return () => window.removeEventListener('resize', checkMd)
+  }, [])
+
+  // Lock body scroll when panel open on mobile
+  useEffect(() => {
+    if (isPanelOpen && window.innerWidth < 768) {
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = 'unset'
+      }
+    }
+  }, [isPanelOpen])
 
   return (
     <>
@@ -71,10 +89,10 @@ export default function Contracts({ currentPage, onNavigate, contracts = [], ent
           setShowCreateForm(false)
         }}
       />
-    <div className="w-full" style={{ marginRight: isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}>
+    <div className="w-full" style={{ marginRight: isMd && isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}>
       <motion.div variants={itemVariants} initial="hidden" animate="visible"
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
-        style={{ marginRight: isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}
+        style={{ marginRight: isMd && isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}
       >
         <h1 className="text-4xl font-light">Contracts</h1>
         <div className="flex items-center gap-4">
@@ -100,7 +118,7 @@ export default function Contracts({ currentPage, onNavigate, contracts = [], ent
         onNavigate={onNavigate}
       />
 
-      <div className="px-4 md:px-8 pt-24" style={{ marginRight: isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}>
+      <div className="px-4 md:px-8 pt-24" style={{ marginRight: isMd && isPanelOpen ? 384 : 0, transition: 'margin-right 0.3s' }}>
 
       {contracts.length === 0 ? (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">
