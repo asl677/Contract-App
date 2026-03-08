@@ -64,20 +64,6 @@ interface JobsResponse {
   hasMore: boolean
 }
 
-const getEmploymentType = (duration: string): string => {
-  const lowerDuration = duration.toLowerCase()
-  if (lowerDuration === 'full-time') return 'Full-time'
-  if (lowerDuration.includes('part-time') ||
-      lowerDuration.includes('contract') ||
-      lowerDuration.includes('temp') ||
-      lowerDuration.includes('intern') ||
-      lowerDuration.includes('vendor') ||
-      lowerDuration.includes('short term') ||
-      lowerDuration.includes('6 month') ||
-      lowerDuration.includes('3 month')) return 'Fractional'
-  return 'Fractional' // Default to Fractional for ambiguous cases
-}
-
 export default function Jobs({ currentPage, onNavigate }: JobsProps) {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('All')
