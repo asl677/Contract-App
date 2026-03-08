@@ -506,13 +506,14 @@ export async function GET(request: Request) {
     const allJobsArrays = await Promise.all(jobPromises)
     let allJobs = allJobsArrays.flat()
 
-    // Count successful sources
+    // Count successful sources and unique companies
     const successfulSources = allJobsArrays.filter(arr => arr.length > 0).length
-    console.log(`Jobs from ${successfulSources} sources, total: ${allJobs.length}`)
+    const uniqueCompanies = new Set(allJobs.map(j => j.company))
+    console.log(`Jobs from ${successfulSources} sources, ${uniqueCompanies.size} unique companies, total: ${allJobs.length}`)
 
-    // If fewer than 3 sources returned jobs OR < 100 total jobs, mix in fallback for variety
-    if (successfulSources < 3 || allJobs.length < 100) {
-      console.log(`Low variety detected (${successfulSources} sources), mixing in fallback`)
+    // Always mix fallback if we have too few sources or companies for variety
+    if (successfulSources < 5 || uniqueCompanies.size < 5) {
+      console.log(`Insufficient variety (${successfulSources} sources, ${uniqueCompanies.size} companies), mixing fallback`)
       allJobs = [...allJobs, ...MASSIVE_FALLBACK_JOBS]
     }
 
@@ -520,8 +521,14 @@ export async function GET(request: Request) {
     const uniqueJobs = Array.from(new Map(allJobs.map(job => [job.url, job])).values())
     console.log(`Total unique jobs: ${uniqueJobs.length}`)
 
+    // Shuffle jobs to mix companies throughout the list
+    const shuffledJobs = uniqueJobs.sort(() => {
+      const seed = Math.random()
+      return seed - 0.5
+    })
+
     // Apply pagination
-    const paginatedJobs = uniqueJobs.slice(offset, offset + limit)
+    const paginatedJobs = shuffledJobs.slice(offset, offset + limit)
     console.log(`Response: ${paginatedJobs.length} jobs (offset ${offset}, limit ${limit}), hasMore=${offset + limit < uniqueJobs.length}`)
 
     return NextResponse.json({
