@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { HamburgerMenuIcon } from '@radix-ui/react-icons'
+import { motion, AnimatePresence } from 'framer-motion'
+import { HamburgerMenuIcon, TrashIcon } from '@radix-ui/react-icons'
 import NavPanel from '@/components/NavPanel'
 
 const containerVariants = {
@@ -62,12 +62,15 @@ export default function Notes({ currentPage, onNavigate }: NotesProps) {
 
   return (
     <div className="w-full">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
-      >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="notes-header"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+          className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
+        >
         <h1 className="text-4xl font-light">Notes</h1>
         <div className="flex items-center gap-4">
           <button
@@ -75,7 +78,7 @@ export default function Notes({ currentPage, onNavigate }: NotesProps) {
             className="text-cream hover:text-coral transition-colors"
             aria-label="Clear notes"
           >
-            Clear
+            <TrashIcon width={20} height={20} />
           </button>
           <button
             onClick={() => setShowNav(!showNav)}
@@ -85,7 +88,8 @@ export default function Notes({ currentPage, onNavigate }: NotesProps) {
             <HamburgerMenuIcon width={22} height={22} />
           </button>
         </div>
-      </motion.div>
+        </motion.div>
+      </AnimatePresence>
 
       <NavPanel
         isOpen={showNav}

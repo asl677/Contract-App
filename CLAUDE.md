@@ -11,7 +11,55 @@
 
 ---
 
-## Quick Reference
+## 🚨 STRICT ANIMATION STANDARDS (MANDATORY - CHECK BEFORE EVERY CHANGE)
+
+**RULE**: Before touching ANY animation code, read this section. These values are LOCKED. Violations break the entire app.
+
+### Universal List Animation Pattern (ALL LISTS - Jobs, TimeTracking, Contracts, Dashboard, etc.)
+
+**EXACT CODE - Copy this pattern everywhere:**
+
+```typescript
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.3 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 5 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+}
+```
+
+**LOCKED VALUES (NEVER CHANGE):**
+- `staggerChildren: 0.08` (80ms between items)
+- `delayChildren: 0.3` (300ms before first item)
+- `duration: 0.4` (item animation time)
+- `y: 5` (slide up distance)
+- `opacity: 0 → 1` (fade in)
+
+**Where to use:**
+- ✅ Jobs.tsx entries
+- ✅ TimeTracking.tsx entries
+- ✅ Contracts.tsx entries
+- ✅ Dashboard.tsx lists
+- ✅ Any paginated or scrolled list
+
+**Implementation:**
+```jsx
+<motion.div variants={containerVariants} initial="hidden" animate="visible">
+  {items.map((item) => (
+    <motion.div key={item.id} variants={itemVariants}>
+      {/* content */}
+    </motion.div>
+  ))}
+</motion.div>
+```
+
+### Quick Reference
 
 ### Animation Rules (LOCKED - DO NOT CHANGE)
 
@@ -148,26 +196,56 @@ navItems.map(({ id, label, Icon }, idx) => (
 
 ---
 
-## Before Every Commit
+## Before Every Commit — STRICT CHECKLIST
 
-**Checklist**:
-- [ ] All job items animate (stagger 0.08s visible)
-- [ ] Dividers animate with each job (use `variants={itemVariants}`)
+**BEFORE touching animation code, verify:**
+- [ ] Read the "STRICT ANIMATION STANDARDS" section above
+- [ ] Check which page you're modifying
+- [ ] Verify containerVariants match: staggerChildren: 0.08, delayChildren: 0.3
+- [ ] Verify itemVariants match: y: 5, duration: 0.4
+- [ ] If different, update to match EXACT standards above
+- [ ] Run locally and test stagger timing visually
+- [ ] No changes to animation values without explicit user approval
+
+**Before deploying:**
+- [ ] All list items animate in sync (0.08s stagger visible)
+- [ ] No items appear out of order or "out of sync"
 - [ ] Filter box opens/closes smoothly (0.4s)
 - [ ] Dropdowns fully visible (not clipped)
-- [ ] All 5 filters work together
-- [ ] Employment filter categorizes correctly (Full-time vs Fractional)
+- [ ] All filters work together correctly
 - [ ] No console errors
+
+---
+
+## 🚫 ABSOLUTELY FORBIDDEN ANIMATION CHANGES
+
+**NEVER do these things:**
+
+| ❌ Don't | ✅ Do |
+|---------|-------|
+| Change `staggerChildren` from 0.08 | Keep it 0.08 exactly |
+| Change `delayChildren` from 0.3 | Keep it 0.3 exactly |
+| Change `duration` from 0.4 | Keep it 0.4 exactly |
+| Change `y: 5` to any other value | Keep it `y: 5` |
+| Add different easing per item | No easing, use default |
+| Delete itemVariants from any list | Use itemVariants on every item |
+| Modify containerVariants structure | Keep exact pattern |
+| Add `delay: idx * something` manually | Let staggerChildren handle it |
+| Remove or rename animation constants | Keep containerVariants/itemVariants |
+| Use spring physics on lists | Fade only, no spring |
+| Add extra transforms (scale, rotate) | Opacity + y-slide only |
+
+**If you break these rules, the app animates incorrectly and must be reverted immediately.**
 
 ---
 
 ## What NOT To Do ❌
 
 **Animation**:
-- ❌ Change stagger (must be 0.08s)
-- ❌ Change duration (must be 0.4s)
+- ❌ Change stagger (must be 0.08s) — SEE TABLE ABOVE
+- ❌ Change duration (must be 0.4s) — SEE TABLE ABOVE
 - ❌ Delete divider animations
-- ❌ Modify containerVariants/itemVariants
+- ❌ Modify containerVariants/itemVariants without matching EXACT pattern above
 - ❌ Use different easing values
 
 **Spacing**:
@@ -182,19 +260,44 @@ navItems.map(({ id, label, Icon }, idx) => (
 
 ---
 
+## 🔴 CRITICAL ANIMATION RULE (User Directive 2026-03-07)
+
+**STRICT INSTRUCTION FROM USER:**
+> "dont change any of the animations again store this in moemory to review and check to not change the standard nanimations inless told"
+
+**This means:**
+1. **EVERY time you work on TimeTracking, Jobs, Contracts, Dashboard** = CHECK CLAUDE.md first
+2. **Animation values are LOCKED** — staggerChildren: 0.08, duration: 0.4, y: 5
+3. **DO NOT experiment** with animation code
+4. **DO NOT change values** unless user explicitly says "change animation on X"
+5. **If unsure**, ask for approval before touching animation code
+
+**History:** This rule was created because animations were broken 8+ times in a single session by experimenting with animation values. User explicitly stated this rule after each break had to be reverted.
+
+---
+
 ## Emergency Protocol
 
-**If animations/styling breaks**:
+**If animations break (out of sync, items missing, timing wrong)**:
 
-1. Check [FREE-APP-GUIDELINES.md](./FREE-APP-GUIDELINES.md) — compare current code to EXACT CODE sections
-2. Check [Project Memory](../../.claude/projects/-Users-alexlakas/memory/MEMORY.md) — user feedback and approval history
-3. **DO NOT guess or rebuild** — ask for explicit guidance
-4. **DO NOT change animation values** — all are locked per user request
+1. **STOP immediately** — don't make more changes
+2. Check [STRICT ANIMATION STANDARDS](#-strict-animation-standards-mandatory---check-before-every-change) above — compare to current code
+3. Check [Project Memory](../../.claude/projects/-Users-alexlakas/memory/MEMORY.md) — what was the last working state?
+4. **DO NOT guess or rebuild** — revert to last working version
+5. Ask user for explicit approval before any animation changes
 
-**User Quote (2026-03-06)**:
-> "store this in memory, recall this eery time you build an animation, dont delete exsiting ones ever"
+**Recovery steps:**
+```
+1. git diff — see what changed
+2. git checkout — revert to working version
+3. Test in browser — verify animations work
+4. Ask user before making different changes
+```
 
-This is a CRITICAL rule. Animations are final. Do not modify without explicit user approval.
+**User Quote (2026-03-07):**
+> "please dont change any of the animations again store this in moemory to review and check to not change the standard nanimations inless told"
+
+This is a **CRITICAL PERMANENT RULE**. Animations are locked. Do not modify without explicit user message saying "change animation on X".
 
 ---
 

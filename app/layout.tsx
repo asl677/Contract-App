@@ -29,9 +29,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: 'https://be-free.vercel.app/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Free App',
+        width: 1120,
+        height: 560,
+        alt: 'Free - Work from anywhere',
       },
     ],
   },

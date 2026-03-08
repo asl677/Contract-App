@@ -191,21 +191,32 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
     return () => clearInterval(interval)
   }, [lastUpdated])
 
-  // Infinite scroll observer
+  // Infinite scroll - load more when near bottom
   useEffect(() => {
-    if (!sentinelRef.current) return
+    if (!hasMore || isLoadingMore) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
-          fetchJobs(offset)
-        }
-      },
-      { rootMargin: '1000px' }
-    )
+    const handleScroll = () => {
+      if (!sentinelRef.current) return
 
-    observer.observe(sentinelRef.current)
-    return () => observer.disconnect()
+      const rect = sentinelRef.current.getBoundingClientRect()
+      console.log('Scroll event - sentinel top:', rect.top, 'threshold:', window.innerHeight + 500)
+
+      if (rect.top < window.innerHeight + 500) {
+        console.log('TRIGGER: Fetching more jobs at offset', offset)
+        fetchJobs(offset)
+      }
+    }
+
+    const throttledScroll = (() => {
+      let timeout: NodeJS.Timeout
+      return () => {
+        clearTimeout(timeout)
+        timeout = setTimeout(handleScroll, 100)
+      }
+    })()
+
+    window.addEventListener('scroll', throttledScroll, { passive: true })
+    return () => window.removeEventListener('scroll', throttledScroll)
   }, [offset, hasMore, isLoadingMore, fetchJobs])
 
   const filtered = useMemo(() => displayedJobs.filter(job => {
@@ -221,13 +232,16 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
 
   return (
     <div className="overflow-x-hidden" style={{ maxWidth: isMd && showFilters ? 'calc(100% - 384px)' : '100%', transition: 'max-width 0.3s ease-in-out' }}>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="fixed top-0 left-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
-        style={{ right: isMd && showFilters ? 384 : 0, transition: 'right 0.3s ease-in-out' }}
-      >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="jobs-header"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+          className="fixed top-0 left-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
+          style={{ right: isMd && showFilters ? 384 : 0, transition: 'right 0.3s ease-in-out' }}
+        >
         <h1 className="text-4xl font-light">Jobs</h1>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -255,7 +269,8 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
             <HamburgerMenuIcon width={22} height={22} />
           </button>
         </div>
-      </motion.div>
+        </motion.div>
+      </AnimatePresence>
 
       <AnimatePresence mode="wait">
         {isLoading ? (
@@ -267,7 +282,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="text-cream/50 font-mono text-sm pulse-text">Grabbin' jobs</p>
+            <p className="text-cream/50 font-mono text-sm pulse-text">Grabbin' Freedom</p>
           </motion.div>
         ) : displayedJobs.length === 0 ? (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex items-center justify-center min-h-[100dvh] -mt-[100px]">
@@ -306,7 +321,12 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
             onNavigate={onNavigate}
           />
 
-          <div className="px-4 md:px-8 pt-20 md:pt-[100px] pb-8">
+          <motion.div
+            className="px-4 md:px-8 pt-20 md:pt-[100px] pb-8"
+            animate={{ opacity: !isMd && showFilters ? 0.3 : 1 }}
+            transition={{ duration: 0.3 }}
+            style={{ pointerEvents: !isMd && showFilters ? 'none' : 'auto' }}
+          >
             <motion.div
             key={`${typeFilter}-${locationFilter}-${search}-${sourceFilter}-${employmentFilter}-${salaryFilter}`}
             variants={containerVariants}
@@ -331,7 +351,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <h3 className="text-xl font-light mb-1">{job.title}</h3>
-                    <p className="text-cream/60 font-mono text-sm">{job.type} <span className="text-xs">•</span> Remote <span className="text-xs">•</span> {getSalaryRange(job.salary)}</p>
+                    <p className="text-cream/60 font-mono text-sm">{job.type}, {job.location.split(', ')[0]}</p>
                   </div>
                   <div className="ml-auto pl-4 md:text-right">
                     <p className="text-xl md:text-3xl text-mint font-sans font-medium">{job.company}</p>
@@ -376,7 +396,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
             <div className="text-cream/50 font-mono text-sm">No mo jobs</div>
           </motion.div>
         )}
-          </div>
+          </motion.div>
         </>
         )}
       </AnimatePresence>

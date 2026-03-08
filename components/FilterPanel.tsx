@@ -55,11 +55,10 @@ export default function FilterPanel({
           animate={{ x: 0 }}
           exit={{ x: '110%' }}
           transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
-          className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white md:bg-dark z-50 overflow-y-auto md:border-l md:border-black flex flex-col"
-          style={{ right: '-10px' }}
+          className="fixed inset-0 md:inset-auto md:top-0 md:right-0 md:w-96 md:h-screen bg-white md:bg-dark z-50 overflow-y-auto md:border-l md:border-black flex flex-col px-4 md:px-0"
         >
             {/* Header */}
-            <div className="sticky top-0 bg-white md:bg-dark px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-white md:bg-dark px-2 md:px-6 py-4 flex items-center justify-between">
               <h2 className="text-lg font-light text-dark md:text-cream">Filters</h2>
               <button
                 onClick={onClose}
@@ -73,7 +72,7 @@ export default function FilterPanel({
             </div>
 
             {/* Content */}
-            <div className="px-6 py-4 space-y-4">
+            <div className="px-4 md:px-6 py-4 space-y-4">
               {/* Search */}
               <input
                 type="text"

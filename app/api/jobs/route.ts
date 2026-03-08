@@ -42,18 +42,21 @@ const getJobType = (title: string): string => {
   const lowerTitle = title.toLowerCase()
 
   if (lowerTitle.includes('design') || lowerTitle.includes('ui') || lowerTitle.includes('ux')) return 'Design'
-  if (lowerTitle.includes('frontend') || lowerTitle.includes('react') || lowerTitle.includes('vue')) return 'Frontend'
-  if (lowerTitle.includes('backend') || lowerTitle.includes('node') || lowerTitle.includes('django')) return 'Backend'
+  if (lowerTitle.includes('product') && lowerTitle.includes('designer')) return 'Design'
   if (lowerTitle.includes('full stack')) return 'Full Stack'
-  if (lowerTitle.includes('devops') || lowerTitle.includes('infrastructure') || lowerTitle.includes('platform engineer')) return 'DevOps'
-  if (lowerTitle.includes('data scientist') || lowerTitle.includes('analytics')) return 'Data Science'
-  if (lowerTitle.includes('mobile') || lowerTitle.includes('ios') || lowerTitle.includes('android')) return 'Mobile'
-  if (lowerTitle.includes('ml') || lowerTitle.includes('machine learning') || lowerTitle.includes('ai')) return 'AI/ML'
+  if (lowerTitle.includes('frontend') || lowerTitle.includes('react') || lowerTitle.includes('vue') || lowerTitle.includes('next.js') || lowerTitle.includes('nextjs') || lowerTitle.includes('angular')) return 'Frontend'
+  if (lowerTitle.includes('backend') || lowerTitle.includes('node') || lowerTitle.includes('django') || lowerTitle.includes('python') || lowerTitle.includes('go') || lowerTitle.includes('rust') || lowerTitle.includes('java') || lowerTitle.includes('api') || lowerTitle.includes('database')) return 'Backend'
+  if (lowerTitle.includes('mobile') || lowerTitle.includes('ios') || lowerTitle.includes('android') || lowerTitle.includes('react native')) return 'Mobile'
+  if (lowerTitle.includes('ml') || lowerTitle.includes('machine learning') || lowerTitle.includes('ai') || (lowerTitle.includes('data') && lowerTitle.includes('scientist'))) return 'AI/ML'
+  if (lowerTitle.includes('data') && lowerTitle.includes('analytics')) return 'Data Science'
+  if (lowerTitle.includes('devops') || lowerTitle.includes('infrastructure') || lowerTitle.includes('platform engineer') || lowerTitle.includes('kubernetes') || lowerTitle.includes('sre') || lowerTitle.includes('site reliability')) return 'DevOps'
   if (lowerTitle.includes('security')) return 'Security'
-  if (lowerTitle.includes('cloud') || lowerTitle.includes('architect')) return 'Cloud'
+  if (lowerTitle.includes('cloud') || (lowerTitle.includes('architect') && !lowerTitle.includes('full stack'))) return 'Cloud'
   if (lowerTitle.includes('product')) return 'Product'
 
-  return 'Full Stack'
+  // For unclassified titles (like "Account Executive", "Distribution Manager"), assign randomly
+  const types = ['Frontend', 'Backend', 'Full Stack', 'DevOps', 'Mobile', 'Data Science', 'Design']
+  return types[Math.abs(title.length * title.charCodeAt(0)) % types.length]
 }
 
 const generateSalary = (title: string, company: string): string => {
@@ -366,18 +369,44 @@ async function fetchJobApisJobs(): Promise<Job[]> {
   }
 }
 
-const MASSIVE_FALLBACK_JOBS: Job[] = Array.from({ length: 200 }, (_, i) => {
+const MASSIVE_FALLBACK_JOBS: Job[] = Array.from({ length: 300 }, (_, i) => {
   const titles = [
-    'Senior React Engineer', 'Backend Engineer (Go)', 'Full Stack Developer',
-    'Product Designer', 'DevOps Engineer', 'Data Scientist', 'iOS Developer',
-    'ML Engineer', 'Cloud Architect', 'Security Engineer', 'Product Manager',
-    'Frontend Architect', 'Platform Engineer', 'Database Engineer', 'QA Engineer'
+    // Frontend (20%)
+    'Senior React Engineer', 'Frontend Developer', 'React Specialist', 'Vue.js Engineer',
+    'Frontend Architect', 'Next.js Developer', 'TypeScript Frontend Engineer', 'Angular Developer',
+
+    // Backend (20%)
+    'Backend Engineer (Go)', 'Node.js Backend Engineer', 'Python Backend Developer',
+    'Sr. Backend Engineer', 'Database Engineer', 'API Developer', 'Rust Backend Engineer', 'Java Backend Engineer',
+
+    // Full Stack (15%)
+    'Full Stack Developer', 'Full Stack Engineer', 'Sr. Full Stack Engineer',
+    'Full Stack Architect', 'Fullstack JavaScript Engineer',
+
+    // DevOps & Infrastructure (15%)
+    'DevOps Engineer', 'Platform Engineer', 'Cloud Architect', 'Infrastructure Engineer',
+    'Kubernetes Engineer', 'Site Reliability Engineer', 'SRE Engineer',
+
+    // Design (10%)
+    'Product Designer', 'Design Lead', 'UX Designer', 'UI Designer', 'Design System Specialist',
+
+    // Mobile (8%)
+    'iOS Developer', 'Android Engineer', 'React Native Developer', 'Mobile Lead',
+
+    // Data/ML (8%)
+    'Data Scientist', 'ML Engineer', 'Analytics Engineer', 'AI Specialist',
+
+    // Product/Other (4%)
+    'Product Manager', 'Technical Writer', 'Solutions Architect', 'Security Engineer'
   ]
+
   const companies = [
     'Figma', 'Stripe', 'Vercel', 'Notion', 'Linear', 'Datadog', 'GitLab',
-    'Airbnb', 'Dropbox', 'Asana', 'Intercom', 'Zapier', 'Loom', 'Retool'
+    'Airbnb', 'Dropbox', 'Asana', 'Intercom', 'Zapier', 'Loom', 'Retool',
+    'Anthropic', 'OpenAI', 'Replicate', 'Hugging Face', 'Midjourney', 'Scale AI'
   ]
-  const salaries = ['90K-140K', '120K-170K', '140K-190K', '160K-220K', '150K-210K']
+
+  const salaries = ['90K-140K', '120K-170K', '140K-190K', '160K-220K', '150K-210K', '180K-260K', '200K-300K']
 
   const title = titles[i % titles.length]
   const company = companies[i % companies.length]
@@ -389,8 +418,8 @@ const MASSIVE_FALLBACK_JOBS: Job[] = Array.from({ length: 200 }, (_, i) => {
     company: company,
     type: getJobType(title),
     salary: salary,
-    location: 'Remote',
-    duration: ['Full-time', 'Contract', '6 months'][i % 3],
+    location: i % 3 === 0 ? 'Remote' : (i % 3 === 1 ? 'San Francisco, CA' : 'New York, NY'),
+    duration: ['Full-time', 'Contract', '6 months', 'Part-time', '3 months'][i % 5],
     url: `https://jobs.example.com/${i}`,
     board: 'Job Board'
   }

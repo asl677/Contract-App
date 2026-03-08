@@ -24,6 +24,7 @@ function HomeContent() {
   const [isTimerRunning, setIsTimerRunning] = useState(false)
   const [timerSeconds, setTimerSeconds] = useState(0)
   const timerRef = useRef(0)
+  const [isLoaded, setIsLoaded] = useState(false)
   const getTodayDate = () => {
     const today = new Date()
     return today.toISOString().split('T')[0]
@@ -50,11 +51,14 @@ function HomeContent() {
     if (savedEntries) {
       setEntries(JSON.parse(savedEntries))
     }
+    setIsLoaded(true)
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('timeEntries', JSON.stringify(entries))
-  }, [entries])
+    if (isLoaded) {
+      localStorage.setItem('timeEntries', JSON.stringify(entries))
+    }
+  }, [entries, isLoaded])
 
   const handleSwipe = () => {
     if (!touchStart.current || !touchEnd.current) return

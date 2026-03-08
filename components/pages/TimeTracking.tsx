@@ -34,11 +34,11 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
+  hidden: { opacity: 0, y: 5 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5 },
+    transition: { duration: 0.4 },
   },
 }
 
@@ -89,12 +89,15 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
 
   return (
     <div className="w-full">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-50 px-4 md:px-8 py-4 flex items-center justify-between"
-      >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="track-header"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+          className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-50 px-4 md:px-8 py-4 flex items-center justify-between"
+        >
         <h1 className="text-4xl font-light">Track</h1>
         <div className="flex items-center gap-8">
           <p className="text-mint font-sans font-medium text-2xl">
@@ -111,7 +114,8 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
             <HamburgerMenuIcon width={22} height={22} />
           </button>
         </div>
-      </motion.div>
+        </motion.div>
+      </AnimatePresence>
 
       <NavPanel
         isOpen={showNav}
@@ -125,7 +129,7 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
         transition={{ duration: 0.2 }}
         style={{ pointerEvents: !isMd && showNav ? 'none' : 'auto' }}
       >
-        <div className="px-4 md:px-8 py-4 pt-24">
+        <div className="px-4 md:px-8 py-4 pt-24 overflow-y-auto">
           <motion.div variants={containerVariants} initial="hidden" animate="visible">
             <motion.div variants={itemVariants}
               className="flex items-center justify-between mb-4"
@@ -178,7 +182,7 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
               <CustomDropdown
                 value={selectedContractId ? String(selectedContractId) : ''}
                 onChange={(value) => onSelectContract?.(value ? Number(value) : null)}
-                options={['', ...contracts.map(c => String(c.id))]}
+                options={['', ...Array.from(new Set(contracts.map(c => String(c.id))))]}
                 displayFormat={(value) => {
                   if (!value) return 'Choose a contract'
                   const contract = contracts.find(c => c.id === Number(value))
@@ -201,39 +205,37 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
             </motion.div>
           </motion.div>
 
-          <AnimatePresence mode="popLayout">
-            {entries.length > 0 ? (
+          {entries.length > 0 ? (
+            <motion.div
+              key="entries-container"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {entries.map((entry) => (
               <motion.div
-                key="entries-container"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+                key={entry.id}
+                className="relative overflow-hidden border-t border-border py-3"
+                variants={itemVariants}
+                layout
               >
-                {entries.map((entry) => (
-                  <motion.div
-                    key={entry.id}
-                    className="relative overflow-hidden border-t border-border py-3"
-                    variants={itemVariants}
-                    layout
-                  >
-                    <p className="font-light text-lg">{entry.contract}</p>
-                    <p className="text-cream/60 font-mono text-xs">{entry.rate}</p>
-                    <p className="text-cream/40 font-mono text-xs mt-1">{entry.duration}</p>
-                  </motion.div>
-                ))}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                >
+                  <p className="font-light text-lg">{entry.contract}</p>
+                  <p className="text-cream/60 font-mono text-xs">{entry.rate}</p>
+                  <p className="text-cream/40 font-mono text-xs mt-1">{entry.duration}</p>
+                </motion.div>
               </motion.div>
-            ) : (
-              <motion.div
-                key="no-entries"
-                className="text-cream/40 py-8 text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                No entries yet
-              </motion.div>
-            )}
-          </AnimatePresence>
+            ))}
+            </motion.div>
+          ) : (
+            <div className="text-cream/40 py-8 text-center">
+              No entries yet
+            </div>
+          )}
         </div>
       </motion.div>
     </div>

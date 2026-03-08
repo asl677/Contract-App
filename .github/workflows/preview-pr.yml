@@ -1,0 +1,23 @@
+name: Auto Preview PR
+
+on:
+  push:
+    branches:
+      - develop
+      - staging
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create PR for preview deploy
+        run: |
+          gh pr create \
+            --base main \
+            --head ${{ github.ref_name }} \
+            --title "Preview: ${{ github.ref_name }}" \
+            --body "Auto-generated preview PR. Vercel will deploy to a preview URL." \
+            --draft || echo "PR already exists"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

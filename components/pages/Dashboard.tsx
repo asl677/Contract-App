@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
 import NavPanel from '@/components/NavPanel'
@@ -73,12 +73,15 @@ export default function Dashboard({ currentPage, onNavigate, contracts = [], ent
 
   return (
     <div className="w-full">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
-      >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="dashboard-header"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+          className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
+        >
         <h1 className="text-4xl font-light">Work</h1>
         <div className="flex items-center gap-8">
           <p className="text-mint font-sans font-medium text-2xl hidden md:block">${totalEarningsAllTime.toFixed(2)}</p>
@@ -90,7 +93,8 @@ export default function Dashboard({ currentPage, onNavigate, contracts = [], ent
             <HamburgerMenuIcon width={22} height={22} />
           </button>
         </div>
-      </motion.div>
+        </motion.div>
+      </AnimatePresence>
 
       <NavPanel
         isOpen={showNav}
