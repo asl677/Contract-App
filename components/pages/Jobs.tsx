@@ -357,7 +357,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
           )}
         </AnimatePresence>
 
-        {filtered.length === 0 && displayedJobs.length > 0 && (
+        {filtered.length === 0 && displayedJobs.length > 0 && !isLoadingMore && (
           <div className="flex justify-center items-center min-h-[60vh] mt-16">
             <div className="text-cream/50 font-mono text-lg text-center">Shit, I found nothin'</div>
           </div>
