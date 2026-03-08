@@ -521,20 +521,27 @@ export async function GET(request: Request) {
     const uniqueJobs = Array.from(new Map(allJobs.map(job => [job.url, job])).values())
     console.log(`Total unique jobs: ${uniqueJobs.length}`)
 
+    // Filter for remote and hybrid roles only
+    const remoteJobs = uniqueJobs.filter(job => {
+      const location = job.location.toLowerCase()
+      return location.includes('remote') || location.includes('hybrid')
+    })
+    console.log(`Filtered to remote/hybrid jobs: ${remoteJobs.length}`)
+
     // Shuffle jobs to mix companies throughout the list
-    const shuffledJobs = uniqueJobs.sort(() => {
+    const shuffledJobs = remoteJobs.sort(() => {
       const seed = Math.random()
       return seed - 0.5
     })
 
     // Apply pagination
     const paginatedJobs = shuffledJobs.slice(offset, offset + limit)
-    console.log(`Response: ${paginatedJobs.length} jobs (offset ${offset}, limit ${limit}), hasMore=${offset + limit < uniqueJobs.length}`)
+    console.log(`Response: ${paginatedJobs.length} jobs (offset ${offset}, limit ${limit}), hasMore=${offset + limit < remoteJobs.length}`)
 
     return NextResponse.json({
       jobs: paginatedJobs,
-      total: uniqueJobs.length,
-      hasMore: offset + limit < uniqueJobs.length
+      total: remoteJobs.length,
+      hasMore: offset + limit < remoteJobs.length
     })
   } catch (error) {
     console.error('Failed to fetch jobs:', error)
