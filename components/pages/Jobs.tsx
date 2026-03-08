@@ -292,7 +292,6 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
             types={types}
             locations={locations}
             sources={uniqueSources}
-            employmentTypes={employmentTypes}
             salaries={salaries}
           />
 
