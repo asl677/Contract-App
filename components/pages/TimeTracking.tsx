@@ -89,7 +89,10 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
 
   return (
     <div className="w-full">
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
         className="fixed top-0 left-0 right-0 md:left-20 bg-dark z-50 px-4 md:px-8 py-4 flex items-center justify-between"
       >
         <h1 className="text-4xl font-light">Track</h1>
@@ -108,7 +111,7 @@ export default function TimeTracking({ currentPage, onNavigate, contracts = [], 
             <HamburgerMenuIcon width={22} height={22} />
           </button>
         </div>
-      </div>
+      </motion.div>
 
       <NavPanel
         isOpen={showNav}

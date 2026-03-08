@@ -221,7 +221,10 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
 
   return (
     <div className="overflow-x-hidden" style={{ maxWidth: isMd && showFilters ? 'calc(100% - 384px)' : '100%', transition: 'max-width 0.3s ease-in-out' }}>
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
         className="fixed top-0 left-0 md:left-20 bg-dark z-40 px-4 md:px-8 py-4 flex items-center justify-between"
         style={{ right: isMd && showFilters ? 384 : 0, transition: 'right 0.3s ease-in-out' }}
       >
@@ -252,7 +255,7 @@ export default function Jobs({ currentPage, onNavigate }: JobsProps) {
             <HamburgerMenuIcon width={22} height={22} />
           </button>
         </div>
-      </div>
+      </motion.div>
 
       <AnimatePresence mode="wait">
         {isLoading ? (
